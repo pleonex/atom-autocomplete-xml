@@ -2,17 +2,24 @@
   "name": "autocomplete-xml",
   "main": "./lib/autocomplete-xml",
   "version": "0.0.0",
-  "description": "A short description of your package",
+  "description": "Autocomplete+ provider for XML via XSD",
   "keywords": [
+      "xml",
+      "xsd",
+      "autocomplete"
   ],
-  "activationCommands": {
-    "atom-workspace": "autocomplete-xml:toggle"
-  },
-  "repository": "https://github.com/atom/autocomplete-xml",
+  "activationCommands": { },
+  "repository": "https://github.com/pleonex/atom-autocomplete-xml",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
-  "dependencies": {
+  "dependencies": { },
+  "providedServices": {
+    "autocomplete.provider": {
+      "versions": {
+        "2.0.0": "provide"
+      }
+    }
   }
 }
