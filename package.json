@@ -1,6 +1,6 @@
 {
   "name": "autocomplete-xml",
-  "main": "./lib/autocomplete-xml",
+  "main": "./lib/main",
   "version": "0.0.0",
   "description": "Autocomplete+ provider for XML via XSD",
   "keywords": [
@@ -18,7 +18,7 @@
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
-        "2.0.0": "provide"
+        "2.0.0": "getProvider"
       }
     }
   }
