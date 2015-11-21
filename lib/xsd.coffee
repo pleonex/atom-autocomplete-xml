@@ -2,9 +2,19 @@ http = require 'http'
 xml2js = require 'xml2js'
 
 module.exports =
+  lastUrl: ''
   complexTypes: {}
 
-  constructor: (xsdUrl, complete) ->
+  clear: ->
+    @lastUrl = ''
+    @complexTypes = {}
+
+  load: (xsdUrl, complete) ->
+    # If we have already process it, do not load again
+    if xsdUrl == @lastUrl
+      complete()
+      return
+
     # Download the file
     http.get xsdUrl, (res) =>
       body = ''
@@ -16,6 +26,7 @@ module.exports =
         xml2js.parseString body, {
           tagNameProcessors: [xml2js.processors.stripPrefix] # Strip nm prefix
           }, (err, result) =>
+            @lastUrl = xsdUrl
             @parse(result, complete)
 
   parse: (xml, complete) ->
@@ -35,6 +46,7 @@ module.exports =
     str.replace(/[\n\r]/, '').trim() if str
 
   addComplexType: (node) ->
+    # TODO: Parse elements (all or sequence or choice)
     name = node.$.name
     type =
       text: name
@@ -45,4 +57,5 @@ module.exports =
     @complexTypes[name] = type
 
   getChildren: (name) ->
-    @complexTypes[name]
+    # TODO: Return children of the name element
+    [@complexTypes[name]]

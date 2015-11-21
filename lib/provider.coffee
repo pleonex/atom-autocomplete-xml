@@ -23,22 +23,18 @@ module.exports =
         else
           []
 
-  loadXsd: ({editor, bufferPosition}, complete) ->
+  loadXsd: ({editor}, complete) ->
     # Get the XSD url
-    txt = editor.getTextInBufferRange([[0, 0], bufferPosition])
+    txt = editor.getText()
     found = txt.match(xsdPattern)
 
-    # If not found, clean the latest XSD url (removed?) and exit
+    # If not found, clean and exit
     if not found
-      @latestXsdUrl = ''
+      xsd.clear()
       return
 
-    # If we have already process it, do not load again
-    if found[1] == @latestXsdUrl
-      return
-
-    # Get the file
-    xsd.constructor(found[1], complete)
+    # Load the file
+    xsd.load(found[1], complete)
 
   isTagName: ({prefix, scopeDescriptor}) ->
     scopes = scopeDescriptor.getScopesArray()
