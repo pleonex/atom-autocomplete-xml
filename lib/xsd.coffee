@@ -66,6 +66,8 @@ module.exports =
 
   ## Create a suggestion object from a child object.
   createSuggestion: (child) ->
+    # The suggestion is a merge between the general type info and the
+    # specific information from the child object.
     sug = @types[child.xsdType]
     sug?.text = child.tagName
     sug?.description = child.description ? sug.description

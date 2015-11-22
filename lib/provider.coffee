@@ -12,8 +12,6 @@ module.exports =
   inclusionPriority: 1
   excludeLowerPriority: true
 
-  # The XSD objects
-  latestXsdUrl: ''
 
   # Return a promise, an array of suggestions, or null.
   getSuggestions: (options) ->
@@ -23,6 +21,7 @@ module.exports =
           @getTagNameCompletions(options, resolve)
         else
           []
+
 
   loadXsd: ({editor}, complete) ->
     # Get the XSD url
@@ -37,17 +36,23 @@ module.exports =
     # Load the file
     xsd.load(found[1], complete)
 
+
   isTagName: ({prefix, scopeDescriptor}) ->
     scopes = scopeDescriptor.getScopesArray()
     scopes.indexOf('entity.name.tag.localname.xml') isnt -1 or
       prefix is '<'
+    # TODO: Fix tag detection when writing just "<".
     return true
+
 
   getTagNameCompletions: ({editor, bufferPosition}, resolve) ->
     resolve(xsd.getChildren(@getPreviousTag(editor, bufferPosition)))
 
+
   getPreviousTag: (editor, bufferPosition) ->
+    # TODO: Fix multiple tags on the same line.
     {row} = bufferPosition
+    row--
     while row >= 0
       tag = editor.lineTextForBufferRow(row).match(tagPattern)?[1]
       return tag if tag

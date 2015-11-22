@@ -2,6 +2,25 @@ http = require 'http'
 xml2js = require 'xml2js'
 
 module.exports =
+  # Expected type object from external modules.
+  # type:
+  #   text: The text for autocomplete. Set externally from child.tagName.
+  #   description: Documentation info. It can be empty.
+  #   type: The autocomplete type.
+  #   rightLabel: The autocomplete right libel. The XML type of element.
+  #
+  #   xsdTypeName: The name inside the XSD.
+  #   xsdChildrenMode: The order of the children: all, sequence or choice.
+  #   xsdChildren: References to other types. They are in groups.
+  #     childType: The type of children nodes group: element, sequence or choice
+  #     minOccurs: The group of children must appear at least...
+  #     maxOccurs: The group of children cann't appear more than ...
+  #     elements: The elements of the group (they must be elements tags).
+  #       tagName: The name of the tag.
+  #       xsdType: the type name inside the XSD.
+  #       description: Optionally. It has priority over type.description.
+  #       minOccurs: The children must appear at least ...
+  #       maxOcurrs: The children cann't appear more than ...
   types: {}
 
   parseFromString: (xmlString, complete) ->
