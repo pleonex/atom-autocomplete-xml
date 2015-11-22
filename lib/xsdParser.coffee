@@ -13,6 +13,7 @@ module.exports =
   #   xsdChildrenMode: The order of the children: all, sequence or choice.
   #   xsdChildren: References to other types. They are in groups.
   #     childType: The type of children nodes group: element, sequence or choice
+  #     description: Optionally. Not sure where it will fit.
   #     minOccurs: The group of children must appear at least...
   #     maxOccurs: The group of children cann't appear more than ...
   #     elements: The elements of the group (they must be elements tags).
@@ -32,7 +33,7 @@ module.exports =
 
   ## Parrse the XSD file. Prepare types and children.
   parse: (xml, complete) ->
-    console.log(xml)
+    # Go to root node
     xml = xml.schema
 
     # Process all ComplexTypes
@@ -42,6 +43,7 @@ module.exports =
     # TODO: Process all AttributeGroup
     # TODO: Process the root node (Element)
     # TODO: Process all Group
+    console.log @types
     complete()
 
 
@@ -61,7 +63,6 @@ module.exports =
     name = node.$.name
     type =
       # XSD params
-      xsdType: 'complex'
       xsdTypeName: name
       xsdAttributes: []
       xsdChildrenMode: ''
@@ -73,7 +74,7 @@ module.exports =
       type: 'tag'
       rightLabel: 'Tag'
 
-    # Parse the child elements
+    # Get the node that contains the children.
     childrenNode = null
     if node.sequence
       type.xsdChildrenMode = 'sequence'
@@ -85,16 +86,37 @@ module.exports =
       type.xsdChildrenMode = 'all'
       childrenNode = node.all[0]
 
-    # We can found element, choice or sequence inside a sequence, choice or all
+    # The children are in groups of type: element, sequence or choice.
     if childrenNode
       type.xsdChildren =
-        (@parseChild child for child in (childrenNode.element ? []))
-        .concat((@parseSubChildren childrenNode.choice, 'choice'))
-        .concat((@parseSubChildren childrenNode.sequence, 'sequence'))
+        (@parseChildrenGroups childrenNode.element, 'element')
+        .concat((@parseChildrenGroups childrenNode.choice, 'choice'))
+        .concat((@parseChildrenGroups childrenNode.sequence, 'sequence'))
 
     # TODO: Parse attributes
 
     @types[name] = type
+
+
+  parseChildrenGroups: (groupNodes, mode) ->
+    if not groupNodes
+      return []
+
+    # For each element/sequence/choice node, create a group object.
+    groups = []
+    for groupNode in groupNodes
+      groups.push {
+        childType: mode
+        description: @getDocumentation groupNode
+        minOccurs: groupNode.$?.minOccurs ? 0
+        maxOccurs: groupNode.$?.maxOccurs ? 'unbounded'
+
+        # We don't support more recursive levels -> check only for elements
+        # If the mode is element, the elements is itself.
+        elements: if mode == 'element' then [].concat @parseChild groupNode else
+          (@parseChild childNode for childNode in (groupNode.element ? []))
+      }
+    return groups
 
 
   parseChild: (node) ->
@@ -104,21 +126,3 @@ module.exports =
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node
-
-
-  parseSubChildren: (node, mode) ->
-    if not node
-      return []
-
-    children = []
-    for subNode in node
-      child =
-        description: @normalizeString subNode.annotation?[0].documentation[0]._
-        nodeMode: mode
-        nodes: []
-
-      # We don't support more recursive levels -> check only for elements
-      for subSubNode in (subNode.element ? [])
-        child.nodes.push @parseChild subSubNode
-      children.push child
-    return children

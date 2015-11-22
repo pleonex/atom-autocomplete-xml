@@ -41,13 +41,12 @@ module.exports =
       return []
 
     # Create list of suggestions from childrens
+    # TODO: Represent groups in autocompletion
     suggestions = []
-    for child in @types[typeName].xsdChildren
-      if child.nodes
-        suggestions.push @createSuggestion c for c in child.nodes
-      else
-        suggestions.push @createSuggestion child
+    for group in @types[typeName].xsdChildren
+      suggestions.push @createSuggestion element for element in group.elements
 
+    # Remove undefined elements (e.g.: non-supported yet types).
     suggestions.filter (n) -> n != undefined
 
 
@@ -57,11 +56,9 @@ module.exports =
     # from different parents pointing to different XSD types. Do XPath query.
 
     for name, value of @types
-      for child in value.xsdChildren
-        if child.nodes
-          (return c.xsdType if c.tagName == tagName) for c in child.nodes
-        else
-          return child.xsdType if child.tagName == tagName
+      for group in value.xsdChildren
+        for el in group.elements
+          return el.xsdType if el.tagName == tagName
 
 
   ## Create a suggestion object from a child object.

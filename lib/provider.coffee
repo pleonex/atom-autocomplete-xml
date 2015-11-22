@@ -51,6 +51,7 @@ module.exports =
 
   getPreviousTag: (editor, bufferPosition) ->
     # TODO: Fix multiple tags on the same line.
+    # TODO: Fix not-being the first child tag.
     {row} = bufferPosition
     row--
     while row >= 0
