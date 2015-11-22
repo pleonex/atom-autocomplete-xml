@@ -36,12 +36,18 @@ module.exports =
     # Go to root node
     xml = xml.schema
 
+    # Process the root node (Element type). Like a Complex type
+    # But the name is in the element instead of complexType tag.
+    xml.element[0].complexType[0].$ = { name: xml.element[0].$.name }
+    rootType = @parseComplexType xml.element[0].complexType[0]
+    rootType.type = 'class'
+    rootType.rightLabel = 'Root'
+
     # Process all ComplexTypes
     @parseComplexType node for node in xml.complexType
 
     # TODO: Process all SimpleType
     # TODO: Process all AttributeGroup
-    # TODO: Process the root node (Element)
     # TODO: Process all Group
     console.log @types
     complete()
@@ -94,8 +100,10 @@ module.exports =
         .concat((@parseChildrenGroups childrenNode.sequence, 'sequence'))
 
     # TODO: Parse attributes
+    # TODO: Create snippet from attributes.
 
     @types[name] = type
+    return type
 
 
   parseChildrenGroups: (groupNodes, mode) ->
