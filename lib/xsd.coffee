@@ -56,6 +56,7 @@ module.exports =
       xsdChildren: []
 
       # Autocomplete params
+      text: ''  # Set later
       description: @normalizeString node.annotation?[0].documentation[0]._
       type: 'tag'
       rightLabel: 'Tag'
@@ -109,6 +110,18 @@ module.exports =
     return children
 
   getChildren: (name) ->
-    # TODO: Return children of the name element
-    console.log @types[name]
-    [@types[name], @types[name]]
+    # Create list of suggestions from childrens
+    suggestions = []
+    for child in @types[name].xsdChildren
+      if child.nodes
+        suggestions.push @createSuggestion c for c in child.nodes
+      else
+        suggestions.push @createSuggestion child
+
+    suggestions
+
+  createSuggestion: (child) ->
+    sug = @types[child.xsdType]
+    sug.text = child.tagName
+    sug.description = child.description ? sug.description
+    return sug
