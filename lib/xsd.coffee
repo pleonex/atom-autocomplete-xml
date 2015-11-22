@@ -110,18 +110,30 @@ module.exports =
     return children
 
   getChildren: (name) ->
+    # From the tag name get the type name
+    typeName = @searchTypeName(name)
+
     # Create list of suggestions from childrens
     suggestions = []
-    for child in @types[name].xsdChildren
+    for child in @types[typeName].xsdChildren
       if child.nodes
         suggestions.push @createSuggestion c for c in child.nodes
       else
         suggestions.push @createSuggestion child
 
-    suggestions
+    suggestions.filter (n) -> n != undefined
+
+  searchTypeName: (tagName) ->
+    # Search inside the types
+    for name, value of @types
+      for child in value.xsdChildren
+        if child.nodes
+          (return c.xsdType if c.tagName == tagName) for c in child.nodes
+        else
+          return child.xsdType if child.tagName == tagName
 
   createSuggestion: (child) ->
     sug = @types[child.xsdType]
-    sug.text = child.tagName
-    sug.description = child.description ? sug.description
+    sug?.text = child.tagName
+    sug?.description = child.description ? sug.description
     return sug

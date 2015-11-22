@@ -1,6 +1,7 @@
 xsd = require './xsd'
 
 xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
+tagPattern = /<([\.\-_a-zA-Z0-9]*)(?:\s|$)/
 
 module.exports =
   # Enable for XML but not for XML comments.
@@ -38,8 +39,17 @@ module.exports =
 
   isTagName: ({prefix, scopeDescriptor}) ->
     scopes = scopeDescriptor.getScopesArray()
-    scopes.indexOf('entity.name.tag.localname.xml') isnt -1
+    scopes.indexOf('entity.name.tag.localname.xml') isnt -1 or
+      prefix is '<'
+    return true
 
   getTagNameCompletions: ({editor, bufferPosition}, resolve) ->
-    # TODO: Get previous tag.
-    resolve(xsd.getChildren("Participant"))
+    resolve(xsd.getChildren(@getPreviousTag(editor, bufferPosition)))
+
+  getPreviousTag: (editor, bufferPosition) ->
+    {row} = bufferPosition
+    while row >= 0
+      tag = editor.lineTextForBufferRow(row).match(tagPattern)?[1]
+      return tag if tag
+      row--
+    return null
