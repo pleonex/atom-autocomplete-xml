@@ -1,14 +1,18 @@
 http = require 'http'
-xml2js = require 'xml2js'
+xsdParser = require './xsdParser'
 
 module.exports =
   lastUrl: ''
   types: {}
 
+
+  ## Clear the data. This is the case of changing the XSD.
   clear: ->
     @lastUrl = ''
-    @complexTypes = {}
+    @types = {}
 
+
+  ## Load a new XSD.
   load: (xsdUrl, complete) ->
     # If we have already process it, do not load again
     if xsdUrl == @lastUrl
@@ -16,102 +20,25 @@ module.exports =
       return
 
     # Download the file
+    # TODO: Read disk files too.
     http.get xsdUrl, (res) =>
       body = ''
       res.on 'data', (chunk) ->
         body += chunk;
 
-      # On complete, parse as XML
+      # On complete, parse XSD
       res.on 'end', =>
-        xml2js.parseString body, {
-          tagNameProcessors: [xml2js.processors.stripPrefix] # Strip nm prefix
-          }, (err, result) =>
-            @lastUrl = xsdUrl
-            @parse(result, complete)
+        @lastUrl = xsdUrl
+        @types = xsdParser.types
+        xsdParser.parseFromString(body, complete)
 
-  parse: (xml, complete) ->
-    console.log(xml)
-    xml = xml.schema
 
-    # Process all ComplexTypes
-    @parseComplexType node for node in xml.complexType
-
-    # TODO: Process all SimpleType
-    # TODO: Process all AttributeGroup
-    # TODO: Process the root node (Element)
-    # TODO: Process all Group
-    complete()
-
-  normalizeString: (str) ->
-    str.replace(/[\n\r]/, '').trim() if str
-
-  parseComplexType: (node) ->
-    name = node.$.name
-    type =
-      # XSD params
-      xsdType: 'complex'
-      xsdTypeName: name
-      xsdAttributes: []
-      xsdChildrenMode: ''
-      xsdChildren: []
-
-      # Autocomplete params
-      text: ''  # Set later
-      description: @normalizeString node.annotation?[0].documentation[0]._
-      type: 'tag'
-      rightLabel: 'Tag'
-
-    # Parse the child elements
-    childrenNode = null
-    if node.sequence
-      type.xsdChildrenMode = 'sequence'
-      childrenNode = node.sequence[0]
-    else if node.choice
-      type.xsdChildrenMode = 'choice'
-      childrenNode = node.choice[0]
-    else if node.all
-      type.xsdChildrenMode = 'all'
-      childrenNode = node.all[0]
-
-    # We can found element, choice or sequence inside a sequence, choice or all
-    if childrenNode
-      type.xsdChildren =
-        (@parseChild child for child in (childrenNode.element ? []))
-        .concat((@parseSubChildren childrenNode.choice, 'choice'))
-        .concat((@parseSubChildren childrenNode.sequence, 'sequence'))
-
-    # TODO: Parse attributes
-
-    @types[name] = type
-
-  parseChild: (node) ->
-    child =
-      tagName: node.$.name
-      xsdType: node.$.type
-      minOccurs: node.$.minOccurs ? 0
-      maxOccurs: node.$.maxOccurs ? 'unbounded'
-      description: @normalizeString node.annotation?[0].documentation[0]._
-
-  parseSubChildren: (node, mode) ->
-    if not node
-      return []
-
-    children = []
-    for subNode in node
-      child =
-        description: @normalizeString subNode.annotation?[0].documentation[0]._
-        nodeMode: mode
-        nodes: []
-
-      # We don't support more recursive levels -> check only for elements
-      for subSubNode in (subNode.element ? [])
-        child.nodes.push @parseChild subSubNode
-      children.push child
-    return children
-
+  ## Called when suggestion requested. Get all the possible node children.
   getChildren: (name) ->
-    # From the tag name get the type name
+    # Get the XSD type name from the tag name.
     typeName = @searchTypeName(name)
+    if not typeName
+      return []
 
     # Create list of suggestions from childrens
     suggestions = []
@@ -123,8 +50,12 @@ module.exports =
 
     suggestions.filter (n) -> n != undefined
 
+
+  ## Search for the XSD type name by using the tag name.
   searchTypeName: (tagName) ->
-    # Search inside the types
+    # TODO: This is not a valid approach since we can found same tag name
+    # from different parents pointing to different XSD types. Do XPath query.
+
     for name, value of @types
       for child in value.xsdChildren
         if child.nodes
@@ -132,6 +63,8 @@ module.exports =
         else
           return child.xsdType if child.tagName == tagName
 
+
+  ## Create a suggestion object from a child object.
   createSuggestion: (child) ->
     sug = @types[child.xsdType]
     sug?.text = child.tagName
