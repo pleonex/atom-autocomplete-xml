@@ -1,4 +1,7 @@
-## 0.1.1
+## 0.3.0
+* Autocomplete for ComplextContent child elements.
+
+## 0.2.0
 * Fix some bugs.
 * Autocomplete for root children nodes.
 

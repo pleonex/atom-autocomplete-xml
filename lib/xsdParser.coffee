@@ -49,6 +49,10 @@ module.exports =
     # TODO: Process all SimpleType
     # TODO: Process all AttributeGroup
     # TODO: Process all Group
+
+    # Post parse the nodes and resolve links.
+    @postParsing()
+
     console.log @types
     complete()
 
@@ -91,6 +95,9 @@ module.exports =
     else if node.all
       type.xsdChildrenMode = 'all'
       childrenNode = node.all[0]
+    else if node.complexContent?[0].extension
+      type.xsdChildrenMode = 'extension'
+      type.xsdChildren = node.complexContent[0].extension[0]
 
     # The children are in groups of type: element, sequence or choice.
     if childrenNode
@@ -106,6 +113,7 @@ module.exports =
     return type
 
 
+  ## Parse the group of children nodes.
   parseChildrenGroups: (groupNodes, mode) ->
     if not groupNodes
       return []
@@ -127,6 +135,7 @@ module.exports =
     return groups
 
 
+  ## Parse a child node.
   parseChild: (node) ->
     child =
       tagName: node.$.name
@@ -134,3 +143,24 @@ module.exports =
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node
+
+
+  ## This takes place after all nodes have been parse. Allow resolve links.
+  postParsing: ->
+    # Post process all nodes
+    for name, type of @types
+
+      # If the children type is extension, resolve the link.
+      if type.xsdChildrenMode == 'extension'
+        extensionType = type.xsdChildren
+
+        # Copy fields from base
+        linkType = @types[extensionType.$.base]
+        type.xsdTypeName = linkType.xsdTypeName
+        type.xsdChildrenMode = linkType.xsdChildrenMode
+        type.xsdChildren = linkType.xsdChildren
+        type.description ?= linkType.description
+        type.type = linkType.type
+        type.rightLabel = linkType.rightLabel
+
+        # TODO: Add extensions (e.g.: attributes)
