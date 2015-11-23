@@ -65,7 +65,14 @@ module.exports =
   createSuggestion: (child) ->
     # The suggestion is a merge between the general type info and the
     # specific information from the child object.
-    sug = @types[child.xsdType]
-    sug?.text = child.tagName
-    sug?.description = child.description ? sug.description
+    sug = null
+    if child.xsdType
+      sug = @types[child.xsdType]
+      sug?.text = child.tagName
+      sug?.description = child.description ? sug.description
+    else
+      sug =
+        text: child.tagName
+        type: 'value'
+        rightLabel: 'Value'
     return sug

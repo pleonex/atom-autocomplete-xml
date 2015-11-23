@@ -46,7 +46,9 @@ module.exports =
     # Process all ComplexTypes
     @parseComplexType node for node in xml.complexType
 
-    # TODO: Process all SimpleType
+    # Process all SimpleTypes
+    @parseSimpleType node for node in xml.simpleType
+
     # TODO: Process all AttributeGroup
     # TODO: Process all Group
 
@@ -68,12 +70,11 @@ module.exports =
       node.annotation?[0].documentation[0])
 
 
-  ## Parse a ComplexType node and children.
-  parseComplexType: (node) ->
-    name = node.$.name
+  # Initialize a type object from a Simple or Complex type node.
+  initTypeObject: (node) ->
     type =
       # XSD params
-      xsdTypeName: name
+      xsdTypeName: node.$.name
       xsdAttributes: []
       xsdChildrenMode: ''
       xsdChildren: []
@@ -83,6 +84,45 @@ module.exports =
       description: @getDocumentation node
       type: 'tag'
       rightLabel: 'Tag'
+
+
+  ## Parse a SimpleType.
+  parseSimpleType: (node) ->
+    type = @initTypeObject node
+
+    # Get the node that contains the children
+    # TODO: Support list children.
+    # TODO: Support union children.
+    # TODO: Support more restriction types.
+    if node.restriction?[0].enumeration
+      type.xsdChildrenMode = 'restriction'
+      childrenNode = node.restriction[0]
+      type.leftLabel = childrenNode.$.base
+
+      group =
+        childType: 'choice'
+        description: ''
+        minOccurs: 0
+        maxOccurs: 'unbounded'
+        elements: []
+      type.xsdChildren.push group
+
+      for val in childrenNode.enumeration
+        group.elements.push {
+          tagName: val.$.value
+          xsdType: null
+          description: ''
+          minOccurs: 0
+          maxOccurs: 1
+        }
+
+    @types[type.xsdTypeName] = type
+    return type
+
+
+  ## Parse a ComplexType node and children.
+  parseComplexType: (node) ->
+    type = @initTypeObject node
 
     # Get the node that contains the children.
     childrenNode = null
@@ -109,7 +149,7 @@ module.exports =
     # TODO: Parse attributes
     # TODO: Create snippet from attributes.
 
-    @types[name] = type
+    @types[type.xsdTypeName] = type
     return type
 
 
