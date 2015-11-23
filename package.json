@@ -1,7 +1,7 @@
 {
   "name": "autocomplete-xml",
   "main": "./lib/main",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Autocomplete+ provider for XML via XSD",
   "keywords": [
     "xml",
