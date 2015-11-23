@@ -1,7 +1,7 @@
 xsd = require './xsd'
 
 xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
-tagPattern = /<([\.\-_a-zA-Z0-9]*)(?:\s|$)/
+tagPattern = /<([\.\-_a-zA-Z0-9]*)(?:\s?|$)/
 
 module.exports =
   # Enable for XML but not for XML comments.
