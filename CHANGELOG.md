@@ -1,6 +1,7 @@
 ## 0.3.0
 * Autocomplete for ComplextContent child elements.
 * Autocomplete for some XSD SimpleType.
+* Fix detection of parent tag.
 * Fix some tag detection issues.
 
 ## 0.2.0

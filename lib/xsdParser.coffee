@@ -23,6 +23,7 @@ module.exports =
   #       minOccurs: The children must appear at least ...
   #       maxOcurrs: The children cann't appear more than ...
   types: {}
+  root: null
 
   parseFromString: (xmlString, complete) ->
     xml2js.parseString xmlString, {
@@ -39,9 +40,9 @@ module.exports =
     # Process the root node (Element type). Like a Complex type
     # But the name is in the element instead of complexType tag.
     xml.element[0].complexType[0].$ = { name: xml.element[0].$.name }
-    rootType = @parseComplexType xml.element[0].complexType[0]
-    rootType.type = 'class'
-    rootType.rightLabel = 'Root'
+    @root = @parseComplexType xml.element[0].complexType[0]
+    @root.type = 'class'
+    @root.rightLabel = 'Root'
 
     # Process all ComplexTypes
     @parseComplexType node for node in xml.complexType

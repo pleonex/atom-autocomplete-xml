@@ -34,31 +34,38 @@ module.exports =
 
 
   ## Called when suggestion requested. Get all the possible node children.
-  getChildren: (name) ->
+  getChildren: (xpath) ->
     # Get the XSD type name from the tag name.
-    typeName = @searchTypeName(name)
-    if not typeName
-      return []
+    type = @findTypeFromXPath xpath
 
     # Create list of suggestions from childrens
     # TODO: Represent groups in autocompletion
     suggestions = []
-    for group in @types[typeName].xsdChildren
+    for group in type.xsdChildren
       suggestions.push @createSuggestion element for element in group.elements
 
     # Remove undefined elements (e.g.: non-supported yet types).
     suggestions.filter (n) -> n != undefined
 
 
-  ## Search for the XSD type name by using the tag name.
-  searchTypeName: (tagName) ->
-    # TODO: This is not a valid approach since we can found same tag name
-    # from different parents pointing to different XSD types. Do XPath query.
+  ## Search the type from the XPath
+  findTypeFromXPath: (xpath) ->
+    type = xsdParser.root
+    xpath.shift()  # Remove root node.
 
-    for name, value of @types
-      for group in value.xsdChildren
-        for el in group.elements
-          return el.xsdType if el.tagName == tagName
+    while xpath && xpath.length > 0
+      nextTag = xpath.shift()
+      nextTypeName = @findTypeFromTag nextTag, type
+      type = @types[nextTypeName]
+
+    return type
+
+
+  ## Search for the XSD type name by using the tag name.
+  findTypeFromTag: (tagName, node) ->
+    for group in node.xsdChildren
+      for el in group.elements
+        return el.xsdType if el.tagName == tagName
 
 
   ## Create a suggestion object from a child object.
