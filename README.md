@@ -6,7 +6,7 @@ XML tag autocompletion for Atom text editor!
 ![Demo](https://raw.githubusercontent.com/pleonex/atom-autocomplete-xml/master/demo.gif)
 
 # Features
-* Download and parse XSD files (at the moment only ComplexTypes).
+* Download and parse XSD files.
 * Show autocompletation for tags with documentation if available.
 
 # Code structure
