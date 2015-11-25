@@ -6,7 +6,7 @@ xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
-tagFullPattern = /(<\/\s*[\.\-_a-zA-Z0-9]+|<\s*[\.\-_a-zA-Z0-9]+|\/>)/
+tagFullPattern = /(<\/\s*[\.\-_a-zA-Z0-9]+|<\s*[\.\-_a-zA-Z0-9]+|\/>)/g
 
 
 module.exports =
@@ -54,13 +54,14 @@ module.exports =
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition}, resolve) ->
     console.log @getXPath editor, bufferPosition
-    resolve []
-    #resolve(xsd.getChildren(@getPreviousTag(editor, bufferPosition)))
+    resolve xsd.getChildren(@getXPath(editor, bufferPosition))
 
 
   ## Get the full XPath to the current tag.
   getXPath: (editor, bufferPosition) ->
     # TODO: Start in the middle of a tag name.
+    # TODO: Skip comments.
+
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
     {row} = bufferPosition
@@ -70,25 +71,23 @@ module.exports =
     while row >= 0
       line = editor.lineTextForBufferRow(row--)
 
-      # Apply the regex expression, read from right to left and remove first.
+      # Apply the regex expression, read from right to left.
       matches = line.match(tagFullPattern)
-      matches?.shift()
       matches?.reverse()
 
       for match in matches ? []
-          # Auto tag close
-          if match == "/>"
-              waitingStartTag = true
-          # End tag
-          else if match[0] == "<" && match[1] == "/"
-              skipList.push match.slice 2
-          # This should be a start tag
-          else if match[0] == "<" && waitingStartTag
-              waitingStartTag = false
-          else if match[0] == "<"
-              tagName = match.slice 1
-              idx = skipList.lastIndexOf tagName
-              if idx != -1 then skipList.splice idx, 1 else xpath.push tagName
-
+        # Auto tag close
+        if match == "/>"
+          waitingStartTag = true
+        # End tag
+        else if match[0] == "<" && match[1] == "/"
+          skipList.push match.slice 2
+        # This should be a start tag
+        else if match[0] == "<" && waitingStartTag
+          waitingStartTag = false
+        else if match[0] == "<"
+          tagName = match.slice 1
+          idx = skipList.lastIndexOf tagName
+          if idx != -1 then skipList.splice idx, 1 else xpath.push tagName
 
     return xpath.reverse()
