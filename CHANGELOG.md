@@ -1,4 +1,5 @@
-## 0.3.2
+## 0.4.0
+* Read XSD files from disk.
 * Fix detection of parent tag from a tag name.
 * Enable filtering.
 

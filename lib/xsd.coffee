@@ -1,4 +1,5 @@
 http = require 'http'
+fs = require 'fs'
 xsdParser = require './xsdParser'
 
 module.exports =
@@ -11,19 +12,23 @@ module.exports =
 
 
   ## Load a new XSD.
-  load: (xsdUrl, complete) ->
-    # Download the file
-    # TODO: Read disk files too.
-    http.get xsdUrl, (res) =>
-      body = ''
-      res.on 'data', (chunk) ->
-        body += chunk;
+  load: (xsdUri, complete) ->
+    if xsdUri.substr(0, 7) is "http://"
+      # Download the file
+      http.get xsdUri, (res) =>
+        body = ''
+        res.on 'data', (chunk) ->
+          body += chunk;
 
-      # On complete, parse XSD
-      res.on 'end', =>
-        @lastUrl = xsdUrl
+        # On complete, parse XSD
+        res.on 'end', =>
+          @types = xsdParser.types
+          xsdParser.parseFromString(body, complete)
+    else
+      # Read the file from disk
+      fs.readFile xsdUri, (err, data) =>
         @types = xsdParser.types
-        xsdParser.parseFromString(body, complete)
+        xsdParser.parseFromString(data, complete)
 
 
   ## Called when suggestion requested. Get all the possible node children.
