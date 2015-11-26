@@ -52,24 +52,27 @@ module.exports =
 
 
   ## Get the tag name completion.
-  getTagNameCompletions: ({editor, bufferPosition}, resolve) ->
-    console.log @getXPath editor, bufferPosition
-    resolve xsd.getChildren(@getXPath(editor, bufferPosition))
+  getTagNameCompletions: ({editor, bufferPosition, prefix}, resolve) ->
+    console.log @getXPath editor, bufferPosition, prefix
+    resolve xsd.getChildren(@getXPath(editor, bufferPosition, prefix))
 
 
   ## Get the full XPath to the current tag.
-  getXPath: (editor, bufferPosition) ->
-    # TODO: Start in the middle of a tag name.
+  getXPath: (editor, bufferPosition, prefix) ->
     # TODO: Skip comments.
 
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
-    {row} = bufferPosition
+    {row, column} = bufferPosition
     xpath = []
     skipList = []
     waitingStartTag = false
+
+    # For the first line read removing the prefix
+    line = editor.getTextInBufferRange([[row, 0], [row, column-prefix.length]])
+
     while row >= 0
-      line = editor.lineTextForBufferRow(row--)
+      row--
 
       # Apply the regex expression, read from right to left.
       matches = line.match(tagFullPattern)
@@ -89,5 +92,8 @@ module.exports =
           tagName = match.slice 1
           idx = skipList.lastIndexOf tagName
           if idx != -1 then skipList.splice idx, 1 else xpath.push tagName
+
+      # Get next line
+      line = editor.lineTextForBufferRow(row)
 
     return xpath.reverse()
