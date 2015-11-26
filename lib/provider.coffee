@@ -18,28 +18,40 @@ module.exports =
   inclusionPriority: 1
   excludeLowerPriority: true
 
+  # Last XSD url loaded - Load only once the XSD.
+  # TODO: Create cache of XSDs.
+  lastXsdUri: ''
+
 
   # Return a promise, an array of suggestions, or null.
   getSuggestions: (options) ->
-    new Promise (resolve) =>
-      @loadXsd options, =>
-        if @isTagName(options)
-          @getTagNameCompletions(options, resolve)
+    newUri = @getXsdUri options
+
+    # If we don't found a URI maybe the file does not have XSD. Clean and exit.
+    if not newUri
+      lastXsdUri = ''
+      xsd.clear()
+      []
+    else if newUri == lastXsdUri
+      @detectAndGetSuggestions options
+    else
+      lastXsdUri = newUri
+      new Promise (resolve) =>
+        xsd.load newUri, => resolve @detectAndGetSuggestions options
 
 
-  ## Load the XSD and build the types tree.
-  loadXsd: ({editor}, complete) ->
+  detectAndGetSuggestions: (options) ->
+    if @isTagName options
+      @getTagNameCompletions options
+    else
+      []
+
+
+  ## Get XSD URI
+  getXsdUri: ({editor}) ->
     # Get the XSD url
     txt = editor.getText()
-    found = txt.match(xsdPattern)
-
-    # If not found, clean and exit
-    if not found
-      xsd.clear()
-      return
-
-    # Load the file
-    xsd.load(found[1], complete)
+    uri = txt.match(xsdPattern)?[1]
 
 
   ## Checks if the current curso is on a incomplete tag name.
@@ -52,9 +64,8 @@ module.exports =
 
 
   ## Get the tag name completion.
-  getTagNameCompletions: ({editor, bufferPosition, prefix}, resolve) ->
-    console.log @getXPath editor, bufferPosition, prefix
-    resolve xsd.getChildren(@getXPath(editor, bufferPosition, prefix))
+  getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
+    xsd.getChildren(@getXPath(editor, bufferPosition, prefix))
 
 
   ## Get the full XPath to the current tag.

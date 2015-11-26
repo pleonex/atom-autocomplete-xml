@@ -2,23 +2,16 @@ http = require 'http'
 xsdParser = require './xsdParser'
 
 module.exports =
-  lastUrl: ''
   types: {}
 
 
   ## Clear the data. This is the case of changing the XSD.
   clear: ->
-    @lastUrl = ''
     @types = {}
 
 
   ## Load a new XSD.
   load: (xsdUrl, complete) ->
-    # If we have already process it, do not load again
-    if xsdUrl == @lastUrl
-      complete()
-      return
-
     # Download the file
     # TODO: Read disk files too.
     http.get xsdUrl, (res) =>
