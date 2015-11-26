@@ -1,5 +1,6 @@
 ## 0.3.2
 * Fix detection of parent tag from a tag name.
+* Enable filtering.
 
 ## 0.3.1
 * Fix detection of parent tag.

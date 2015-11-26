@@ -22,6 +22,9 @@ module.exports =
   # TODO: Create cache of XSDs.
   lastXsdUri: ''
 
+  # Filter suggestions while typing.
+  filterSuggestions: true
+
 
   # Return a promise, an array of suggestions, or null.
   getSuggestions: (options) ->
@@ -29,13 +32,13 @@ module.exports =
 
     # If we don't found a URI maybe the file does not have XSD. Clean and exit.
     if not newUri
-      lastXsdUri = ''
+      @lastXsdUri = ''
       xsd.clear()
       []
-    else if newUri == lastXsdUri
+    else if newUri == @lastXsdUri
       @detectAndGetSuggestions options
     else
-      lastXsdUri = newUri
+      @lastXsdUri = newUri
       new Promise (resolve) =>
         xsd.load newUri, => resolve @detectAndGetSuggestions options
 
@@ -65,7 +68,7 @@ module.exports =
 
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
-    xsd.getChildren(@getXPath(editor, bufferPosition, prefix))
+    xsd.getChildren @getXPath(editor, bufferPosition, prefix)
 
 
   ## Get the full XPath to the current tag.
