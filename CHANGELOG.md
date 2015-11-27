@@ -1,3 +1,6 @@
+## 0.4.1
+* Fix #2 - Relative XSD paths from current open file.
+
 ## 0.4.0
 * Read XSD files from disk.
 * Fix detection of parent tag from a tag name.

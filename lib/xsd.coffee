@@ -1,5 +1,6 @@
 http = require 'http'
 fs = require 'fs'
+path = require 'path'
 xsdParser = require './xsdParser'
 
 module.exports =
@@ -12,7 +13,7 @@ module.exports =
 
 
   ## Load a new XSD.
-  load: (xsdUri, complete) ->
+  load: (xmlPath, xsdUri, complete) ->
     if xsdUri.substr(0, 7) is "http://"
       # Download the file
       http.get xsdUri, (res) =>
@@ -25,8 +26,14 @@ module.exports =
           @types = xsdParser.types
           xsdParser.parseFromString(body, complete)
     else
+      # Get the base path. In absolute path nothing, in relative the file dir.
+      if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
+        basePath = ''
+      else
+        basePath = path.dirname xmlPath
+
       # Read the file from disk
-      fs.readFile xsdUri, (err, data) =>
+      fs.readFile path.join(basePath, xsdUri), (err, data) =>
         @types = xsdParser.types
         xsdParser.parseFromString(data, complete)
 
