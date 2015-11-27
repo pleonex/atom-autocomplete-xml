@@ -6,7 +6,14 @@ xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
-tagFullPattern = /(<\/\s*[\.\-_a-zA-Z0-9]+|<\s*[\.\-_a-zA-Z0-9]+|\/>)/g
+startTagPattern = '<\s*[\.\-_a-zA-Z0-9]+'
+endTagPattern = '<\/\s*[\.\-_a-zA-Z0-9]+'
+autoClosePattern = '\/>'
+startCommentPattern = '\s*<!--'
+endCommentPattern = '\s*-->'
+fullPattern = new RegExp("(" +
+  startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
+  startCommentPattern + "|" + endCommentPattern + ")", "g")
 
 
 module.exports =
@@ -74,14 +81,13 @@ module.exports =
 
   ## Get the full XPath to the current tag.
   getXPath: (editor, bufferPosition, prefix) ->
-    # TODO: Skip comments.
-
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
     {row, column} = bufferPosition
     xpath = []
     skipList = []
     waitingStartTag = false
+    waitingStarTComment = false
 
     # For the first line read removing the prefix
     line = editor.getTextInBufferRange([[row, 0], [row, column-prefix.length]])
@@ -90,12 +96,21 @@ module.exports =
       row--
 
       # Apply the regex expression, read from right to left.
-      matches = line.match(tagFullPattern)
+      matches = line.match(fullPattern)
       matches?.reverse()
 
       for match in matches ? []
+        # Start comment
+        if match == "<!--"
+          waitingStartComment = false
+        # End comment
+        else if match == "-->"
+          waitingStartComment = true
+        # Ommit comment content
+        else if waitingStartComment
+          continue
         # Auto tag close
-        if match == "/>"
+        else if match == "/>"
           waitingStartTag = true
         # End tag
         else if match[0] == "<" && match[1] == "/"

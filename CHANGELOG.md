@@ -1,3 +1,6 @@
+## 0.4.2
+* * Fix #3 - Ommit content in XML comments.
+
 ## 0.4.1
 * Fix #2 - Relative XSD paths from current open file.
 
