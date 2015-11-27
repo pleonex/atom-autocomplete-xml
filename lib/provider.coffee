@@ -6,9 +6,9 @@ xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
-startTagPattern = '<\s*[\.\-_a-zA-Z0-9]+'
-endTagPattern = '<\/\s*[\.\-_a-zA-Z0-9]+'
-autoClosePattern = '\/>'
+startTagPattern = '<\s*[\\.\\-_a-zA-Z0-9]+'
+endTagPattern = '<\\/\s*[\\.\\-_a-zA-Z0-9]+'
+autoClosePattern = '\\/>'
 startCommentPattern = '\s*<!--'
 endCommentPattern = '\s*-->'
 fullPattern = new RegExp("(" +
@@ -120,6 +120,11 @@ module.exports =
           waitingStartTag = false
         else if match[0] == "<"
           tagName = match.slice 1
+
+          # Ommit XML definition.
+          if tagName == "?xml"
+            continue
+
           idx = skipList.lastIndexOf tagName
           if idx != -1 then skipList.splice idx, 1 else xpath.push tagName
 
