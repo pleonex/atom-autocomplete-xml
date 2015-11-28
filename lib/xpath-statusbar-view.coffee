@@ -4,13 +4,14 @@ utils = require './xml-utils'
 # XPath view in the status Bar.
 # Create a label and append to the StatusBar. In order to update the content,
 # subscribe to active panel changes and inside that to
-# TextEditor content changes.
+# TextEditor cursor changes.
 class XPathStatusBarView extends HTMLDivElement
-  statusBar: null               # The status bar.
-  xpathLabel: null              # StatusBar label for XPath.
-  tile: null                    # Tile object appended to the StatusBar.
-  xpathSubscription: null       # TextEditor content change subscription.
-  activeItemSubscription: null  # Active panel change subscription.
+  statusBar: null                 # The status bar.
+  xpathLabel: null                # StatusBar label for XPath.
+  tile: null                      # Tile object appended to the StatusBar.
+  xpathSubscription: null         # TextEditor content change subscription.
+  activeItemSubscription: null    # Active panel change subscription.
+  configurationSubscription: null # Configuration change subscription.
 
   ## Constructor: create the label and append to the div.
   initialize: (statusBar) ->
@@ -18,28 +19,40 @@ class XPathStatusBarView extends HTMLDivElement
     @classList.add('xpath-status', 'inline-block')  # Class is inline-block.
     @xpathLabel = document.createElement('label')   # Object will be label.
     @appendChild(@xpathLabel)                       # Append the label to div.
-    # TODO: Add configuration subscription.
+    @initConfigurationSubscription()
     this
 
   ## Destroy all the components.
   destroy: ->
     @disposeViewSubscriptions()
-    # TODO: Destroy configuration subscription.
+
+    # Destroy the configuration change subscription.
+    @configurationSubscription?.destroy()
+    @configurationSubscription = null
+
     # Destroy the tile StatusBar object.
     @tile?.destroy()
     @tile = null
+
+  ## Subscribe to configuration chages.
+  initConfigurationSubscription: ->
+    @configurationSubscription = atom.config.onDidChange(
+      'autocomplete-xml.showXPathInStatusBar', => @attach())
 
   ## Attach the view to the status bar.
   attach: ->
     # Destroy the current StatusBar object.
     @tile?.destroy()
 
-    # TODO: Attach if configuration is enable.
-    # Subscribe to panel changes.
-    @initViewSubscriptions()
+    if atom.config.get 'autocomplete-xml.showXPathInStatusBar'
+      # Subscribe to panel changes.
+      @initViewSubscriptions()
 
-    # Destroy the current tile and append to the statusBar a new.
-    @tile = @statusBar.addRightTile(item: this)
+      # Destroy the current tile and append to the statusBar a new.
+      @tile = @statusBar.addRightTile(item: this)
+    else
+      # Disable -> dispose everything if it was created previously.
+      @disposeViewSubscriptions()
     return @tile
 
   ## Init the subscription events of the view.
