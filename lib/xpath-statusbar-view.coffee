@@ -19,12 +19,16 @@ class XPathStatusBarView extends HTMLDivElement
     @classList.add('xpath-status', 'inline-block')  # Class is inline-block.
     @xpathLabel = document.createElement('label')   # Object will be label.
     @appendChild(@xpathLabel)                       # Append the label to div.
-    @initConfigurationSubscription()
+    @handleEvents()
     this
 
   ## Destroy all the components.
   destroy: ->
     @disposeViewSubscriptions()
+
+    # Dispose the subscription to panel changes.
+    @activeItemSubscription?.dispose()
+    @activeItemSubscription = null
 
     # Destroy the configuration change subscription.
     @configurationSubscription?.destroy()
@@ -34,10 +38,18 @@ class XPathStatusBarView extends HTMLDivElement
     @tile?.destroy()
     @tile = null
 
-  ## Subscribe to configuration chages.
-  initConfigurationSubscription: ->
-    @configurationSubscription = atom.config.onDidChange(
+  ## Subscribe to configuration chages and panel changes.
+  handleEvents: ->
+    # Check for current panel active changes to attach listeners.
+    @activeItemSubscription = atom.workspace.onDidChangeActivePaneItem =>
+      @subscribeToActiveTextEditor()
+
+    # Check for configuration changes.
+    @configurationSubscription = atom.config.observe(
       'autocomplete-xml.showXPathInStatusBar', => @attach())
+
+    # And attach subscriber to the current panel if it's a TextEditor.
+    @subscribeToActiveTextEditor()
 
   ## Attach the view to the status bar.
   attach: ->
@@ -45,34 +57,15 @@ class XPathStatusBarView extends HTMLDivElement
     @tile?.destroy()
 
     if atom.config.get 'autocomplete-xml.showXPathInStatusBar'
-      # Subscribe to panel changes.
-      @initViewSubscriptions()
-
-      # Destroy the current tile and append to the statusBar a new.
+      # Append to the statusBar a new.
       @tile = @statusBar.addRightTile(item: this)
     else
       # Disable -> dispose everything if it was created previously.
       @disposeViewSubscriptions()
     return @tile
 
-  ## Init the subscription events of the view.
-  initViewSubscriptions: ->
-    # Dispose the current subscriptions.
-    @disposeViewSubscriptions()
-
-    # And attach subscriber to the current panel if it's a TextEditor.
-    @subscribeToActiveTextEditor()
-
-    # When the current panel change, call to subscribe to the new one.
-    @activeItemSubscription = atom.workspace.onDidChangeActivePane =>
-      @subscribeToActiveTextEditor()
-
   ## Dispose the subscription events of the view.
   disposeViewSubscriptions: ->
-    # Dispose the subscription to panel changes.
-    @activeItemSubscription?.dispose()
-    @activeItemSubscription = null
-
     # Dispose the subscription to text editor changes.
     @xpathSubscription?.dispose()
     @xpathSubscription = null
@@ -90,6 +83,8 @@ class XPathStatusBarView extends HTMLDivElement
       @updateXPath()
       @xpathSubscription = @getActiveTextEditor()?.onDidChangeCursorPosition =>
         @updateXPath()
+    else
+      @xpathLabel.textContent = ''
 
   ## Update the content of the label with the current XPath if any.
   updateXPath: ->
