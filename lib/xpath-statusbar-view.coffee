@@ -68,14 +68,14 @@ class XPathStatusBarView extends HTMLDivElement
   getActiveTextEditor: ->
     atom.workspace.getActiveTextEditor()
 
-  ## Subscribe the update text method to the stopChanging text editor event.
+  ## Subscribe the event ChangeCursor to update the XPath.
   subscribeToActiveTextEditor: ->
     @xpathSubscription?.dispose()
 
     # Only if it's an XML file.
     if @getActiveTextEditor()?.getGrammar()?.name == "XML"
       @updateXPath()
-      @xpathSubscription = @getActiveTextEditor()?.onDidStopChanging =>
+      @xpathSubscription = @getActiveTextEditor()?.onDidChangeCursorPosition =>
         @updateXPath()
 
   ## Update the content of the label with the current XPath if any.
