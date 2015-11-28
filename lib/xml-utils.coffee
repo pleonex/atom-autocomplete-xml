@@ -15,7 +15,7 @@ fullPattern = new RegExp("(" +
 module.exports =
 
   ## Get the full XPath to the current tag.
-  getXPath: (editor, bufferPosition, prefix) ->
+  getXPath: (buffer, bufferPosition, prefix) ->
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
     {row, column} = bufferPosition
@@ -25,7 +25,7 @@ module.exports =
     waitingStarTComment = false
 
     # For the first line read removing the prefix
-    line = editor.getTextInBufferRange([[row, 0], [row, column-prefix.length]])
+    line = buffer.getTextInRange([[row, 0], [row, column-prefix.length]])
 
     while row >= 0
       row--
@@ -64,6 +64,6 @@ module.exports =
           if idx != -1 then skipList.splice idx, 1 else xpath.push tagName
 
       # Get next line
-      line = editor.lineTextForBufferRow(row)
+      line = buffer.lineForRow(row)
 
     return xpath.reverse()

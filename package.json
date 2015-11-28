@@ -23,5 +23,12 @@
         "2.0.0": "getProvider"
       }
     }
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
   }
 }

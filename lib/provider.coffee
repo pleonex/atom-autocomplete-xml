@@ -63,4 +63,4 @@ module.exports =
 
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
-    xsd.getChildren utils.getXPath(editor, bufferPosition, prefix)
+    xsd.getChildren utils.getXPath(editor.getBuffer(), bufferPosition, prefix)

@@ -1,3 +1,6 @@
+## 0.5.0
+* New status bar label with current XPath.
+
 ## 0.4.2
 * Fix #3 - Ignore content in XML comments.
 * Ignore <?xml> tags.
@@ -22,7 +25,7 @@
 * Fix some bugs.
 * Autocomplete for root children nodes.
 
-## 0.1.0 - First Release
+## 0.1.0
 * Get the URL of the XSD from the XML attribute.
 * Download a XSD from an URL.
 * Show basic autocompletation from XSD ComplexTypes.
