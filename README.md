@@ -1,5 +1,5 @@
 # Autocomplete XML Atom Package
-**Note: This is an alpha version. It is not fully implemented.**
+![Dependencies](https://david-dm.org/pleonex/atom-autocomplete-xml.svg)
 
 XML tag autocompletion for Atom text editor!
 
