@@ -47,12 +47,12 @@ class XPathStatusBarView extends HTMLDivElement
     # Dispose the current subscriptions.
     @disposeViewSubscriptions()
 
-    # When the current panel change, subscribe if it's a TextEditor.
+    # And attach subscriber to the current panel if it's a TextEditor.
+    @subscribeToActiveTextEditor()
+
+    # When the current panel change, call to subscribe to the new one.
     @activeItemSubscription = atom.workspace.onDidChangeActivePane =>
       @subscribeToActiveTextEditor()
-
-    # And attach to the current one.
-    @subscribeToActiveTextEditor()
 
   ## Dispose the subscription events of the view.
   disposeViewSubscriptions: ->
@@ -71,9 +71,12 @@ class XPathStatusBarView extends HTMLDivElement
   ## Subscribe the update text method to the stopChanging text editor event.
   subscribeToActiveTextEditor: ->
     @xpathSubscription?.dispose()
-    @xpathSubscription = @getActiveTextEditor()?.onDidStopChanging =>
+
+    # Only if it's an XML file.
+    if @getActiveTextEditor()?.getGrammar()?.name == "XML"
       @updateXPath()
-    @updateXPath()
+      @xpathSubscription = @getActiveTextEditor()?.onDidStopChanging =>
+        @updateXPath()
 
   ## Update the content of the label with the current XPath if any.
   updateXPath: ->
