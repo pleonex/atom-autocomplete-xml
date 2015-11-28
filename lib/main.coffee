@@ -5,6 +5,10 @@ module.exports =
 
   getProvider: -> provider
 
+  deactivate: ->
+    @xpathView?.destroy()
+    @xpathView = null
+
   consumeStatusBar: (statusBar) ->
     XPathStatusBarView = require './xpath-statusbar-view'
     @xpathView = new XPathStatusBarView().initialize(statusBar)
