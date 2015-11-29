@@ -4,6 +4,7 @@ module.exports =
   # Expected type object from external modules.
   # type:
   #   text: The text for autocomplete. Set externally from child.tagName.
+  #   displayText: Same as text but text may contain closing tags, etc...
   #   description: Documentation info. It can be empty.
   #   type: The autocomplete type.
   #   rightLabel: The autocomplete right libel. The XML type of element.
@@ -81,6 +82,7 @@ module.exports =
 
       # Autocomplete params
       text: ''  # Set later
+      displayText: ''  # Set later
       description: @getDocumentation node
       type: 'tag'
       rightLabel: 'Tag'

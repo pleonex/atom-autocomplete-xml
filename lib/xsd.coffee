@@ -80,11 +80,13 @@ module.exports =
     sug = null
     if child.xsdType
       sug = @types[child.xsdType]
-      sug?.text = child.tagName
+      sug?.text = child.tagName + '>'
+      sug?.displayText = child.tagName
       sug?.description = child.description ? sug.description
     else
       sug =
         text: child.tagName
+        displayText: child.tagName
         type: 'value'
         rightLabel: 'Value'
     return sug
