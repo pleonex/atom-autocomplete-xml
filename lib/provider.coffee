@@ -41,6 +41,8 @@ module.exports =
   detectAndGetSuggestions: (options) ->
     if @isTagName options
       @getTagNameCompletions options
+    else if @isCloseTagName options
+      @getCloseTagNameCompletion options
     else
       []
 
@@ -53,14 +55,32 @@ module.exports =
 
 
   ## Checks if the current curso is on a incomplete tag name.
-  isTagName: ({prefix, scopeDescriptor}) ->
+  isTagName: ({editor, bufferPosition, scopeDescriptor}) ->
+    {row, column} = bufferPosition
+    lastChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
     scopes = scopeDescriptor.getScopesArray()
-    scopes.indexOf('entity.name.tag.localname.xml') isnt -1 or
-      prefix is '<'
-    # TODO: Fix tag detection when writing just "<".
-    return true
+    return scopes.indexOf('entity.name.tag.localname.xml') isnt -1 or
+      lastChar is '<'
 
 
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
     xsd.getChildren utils.getXPath(editor.getBuffer(), bufferPosition, prefix)
+
+
+  ## Checks if the current cursor is to close a tag.
+  isCloseTagName: ({editor, bufferPosition}) ->
+    {row, column} = bufferPosition
+    lastTwoChars = editor.getTextInBufferRange([[row, column-2], [row, column]])
+    return lastTwoChars is "</"
+
+
+  ## Get the tag name that close the current one.
+  getCloseTagNameCompletion: ({editor, bufferPosition, prefix}) ->
+    parentTag = utils.getXPath(editor.getBuffer(), bufferPosition, prefix, 1)[0]
+    return [{
+      text: parentTag + '>'
+      displayText: parentTag
+      type: 'tag'
+      rightLabel: 'Tag'
+    }]

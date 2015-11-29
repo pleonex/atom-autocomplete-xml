@@ -1,3 +1,7 @@
+## 0.6.0
+* Improve detection of autocompletion type.
+* Show autocompletion for close tags.
+
 ## 0.5.0
 * New status bar label with current XPath.
 

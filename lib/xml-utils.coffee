@@ -15,7 +15,7 @@ fullPattern = new RegExp("(" +
 module.exports =
 
   ## Get the full XPath to the current tag.
-  getXPath: (buffer, bufferPosition, prefix) ->
+  getXPath: (buffer, bufferPosition, prefix, maxDepth) ->
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
     {row, column} = bufferPosition
@@ -27,7 +27,7 @@ module.exports =
     # For the first line read removing the prefix
     line = buffer.getTextInRange([[row, 0], [row, column-prefix.length]])
 
-    while row >= 0
+    while row >= 0 and (!maxDepth or xpath.length < maxDepth)
       row--
 
       # Apply the regex expression, read from right to left.
