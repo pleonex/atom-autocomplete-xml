@@ -57,8 +57,19 @@ module.exports =
   filterCompletions: (candidate, prefix) ->
     completions = []
     for child in candidate when not prefix or child.text.indexOf(prefix) is 0
-      completions.push child
+      completions.push @buildCompletion child
     return completions
+
+
+  ## Build the completion from scratch. In this way the object doesn't
+  ## contain attributes from previous autocomplete-plus processing.
+  buildCompletion: (value) ->
+    text: value.text
+    displayText: value.displayText
+    description: value.description
+    type: value.type
+    rightLabel: value.rightLabel
+    leftLabel: value.leftLabel
 
 
   ## Checks if the current cursor is on a incomplete tag name.

@@ -2,6 +2,7 @@
 * Improve detection of autocompletion type.
 * Show autocompletion for close tags.
 * Filter the completions with the current prefix.
+* Fix getting garbage autocompletion attributes.
 
 ## 0.5.0
 * New status bar label with current XPath.

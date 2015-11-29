@@ -8,6 +8,7 @@ module.exports =
   #   description: Documentation info. It can be empty.
   #   type: The autocomplete type.
   #   rightLabel: The autocomplete right libel. The XML type of element.
+  #   leftLabel: The type of the value.
   #
   #   xsdTypeName: The name inside the XSD.
   #   xsdChildrenMode: The order of the children: all, sequence or choice.
