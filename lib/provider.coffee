@@ -73,12 +73,11 @@ module.exports =
 
 
   ## Checks if the current cursor is on a incomplete tag name.
-  isTagName: ({editor, bufferPosition, scopeDescriptor}) ->
+  isTagName: ({editor, bufferPosition, prefix}) ->
     {row, column} = bufferPosition
-    lastChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
-    scopes = scopeDescriptor.getScopesArray()
-    return scopes.indexOf('entity.name.tag.localname.xml') isnt -1 or
-      lastChar is '<'
+    tagPos = column - prefix.length - 1
+    tagChars = editor.getTextInBufferRange([[row, tagPos], [row, tagPos + 1]])
+    return tagChars is '<'
 
 
   ## Get the tag name completion.
@@ -92,10 +91,12 @@ module.exports =
 
 
   ## Checks if the current cursor is to close a tag.
-  isCloseTagName: ({editor, bufferPosition}) ->
+  isCloseTagName: ({editor, bufferPosition, prefix}) ->
     {row, column} = bufferPosition
-    lastTwoChars = editor.getTextInBufferRange([[row, column-2], [row, column]])
-    return lastTwoChars is "</"
+    tagClosePos = column - prefix.length - 2
+    tagChars = editor.getTextInBufferRange(
+      [[row, tagClosePos], [row, tagClosePos + 2]])
+    return tagChars is "</"
 
 
   ## Get the tag name that close the current one.
