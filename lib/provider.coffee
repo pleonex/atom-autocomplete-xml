@@ -16,9 +16,6 @@ module.exports =
   # TODO: Create cache of XSDs.
   lastXsdUri: ''
 
-  # Filter suggestions while typing.
-  filterSuggestions: true
-
 
   # Return a promise, an array of suggestions, or null.
   getSuggestions: (options) ->
@@ -43,6 +40,8 @@ module.exports =
       @getTagNameCompletions options
     else if @isCloseTagName options
       @getCloseTagNameCompletion options
+    else if @isTagValue options
+      @getValuesCompletions options
     else
       []
 
@@ -54,7 +53,15 @@ module.exports =
     uri = txt.match(xsdPattern)?[1]
 
 
-  ## Checks if the current curso is on a incomplete tag name.
+  ## Filter the candidate completions by prefix.
+  filterCompletions: (candidate, prefix) ->
+    completions = []
+    for child in candidate when not prefix or child.text.indexOf(prefix) is 0
+      completions.push child
+    return completions
+
+
+  ## Checks if the current cursor is on a incomplete tag name.
   isTagName: ({editor, bufferPosition, scopeDescriptor}) ->
     {row, column} = bufferPosition
     lastChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
@@ -65,17 +72,12 @@ module.exports =
 
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
-    completions = []
-
     # Get the children of the current XPath tag.
     children = xsd.getChildren(
       utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
 
     # Apply a filter with the current prefix and return.
-    for child in children when not prefix or child.text.indexOf(prefix) is 0
-      child.text = child.text.substr prefix.length
-      completions.push child
-    return completions
+    return @filterCompletions children, prefix
 
 
   ## Checks if the current cursor is to close a tag.
@@ -94,3 +96,19 @@ module.exports =
       type: 'tag'
       rightLabel: 'Tag'
     }]
+
+
+  ## Checks if the current cursor is about complete values.
+  isTagValue: ({scopeDescriptor}) ->
+    # For multiline values we can only check text.xml
+    return scopeDescriptor.getScopesArray().indexOf('text.xml') isnt -1
+
+
+  ## Get the values of the current XPath tag.
+  getValuesCompletions: ({editor, bufferPosition, prefix}) ->
+    # Get the children of the current XPath tag.
+    children = xsd.getChildren(
+      utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
+
+    # Apply a filter with the current prefix and return.
+    return @filterCompletions children, prefix
