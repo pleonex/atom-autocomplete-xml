@@ -65,7 +65,17 @@ module.exports =
 
   ## Get the tag name completion.
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
-    xsd.getChildren utils.getXPath(editor.getBuffer(), bufferPosition, prefix)
+    completions = []
+
+    # Get the children of the current XPath tag.
+    children = xsd.getChildren(
+      utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
+
+    # Apply a filter with the current prefix and return.
+    for child in children when not prefix or child.text.indexOf(prefix) is 0
+      child.text = child.text.substr prefix.length
+      completions.push child
+    return completions
 
 
   ## Checks if the current cursor is to close a tag.

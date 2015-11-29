@@ -1,6 +1,7 @@
 ## 0.6.0
 * Improve detection of autocompletion type.
 * Show autocompletion for close tags.
+* Filter the completions with the current prefix.
 
 ## 0.5.0
 * New status bar label with current XPath.
