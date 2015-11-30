@@ -56,10 +56,10 @@ module.exports =
 
 
   ## Filter the candidate completions by prefix.
-  filterCompletions: (sugs, prefix) ->
+  filterCompletions: (sugs, pref) ->
     completions = []
-    prefix = prefix?.trim()
-    for s in sugs when not prefix or (s.text ? s.snippet).indexOf(prefix) is 0
+    pref = pref?.trim()
+    for s in sugs when not pref or (s.text ? s.snippet).indexOf(pref) isnt -1
       completions.push @buildCompletion s
     return completions
 
@@ -125,7 +125,7 @@ module.exports =
   getValuesCompletions: ({editor, bufferPosition, prefix}) ->
     # Get the children of the current XPath tag.
     children = xsd.getValues(
-      utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
+      utils.getXPath(editor.getBuffer(), bufferPosition, ''))
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions children, prefix
