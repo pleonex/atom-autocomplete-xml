@@ -23,6 +23,13 @@ module.exports =
   #       description: Optionally. It has priority over type.description.
   #       minOccurs: The children must appear at least ...
   #       maxOcurrs: The children cann't appear more than ...
+  #  xsdAttributes: The attributes of the element.
+  #    name: The attribute name.
+  #    type: The attribute type.
+  #    description: Optional. The attribute documentation.
+  #    fixed: Optional. The fixed value of the attribute.
+  #    use: If the attribute must be present or not. Default: false.
+  #    default: Thea attribute default value.
   types: {}
   root: null
 
@@ -51,6 +58,7 @@ module.exports =
     # Process all SimpleTypes
     @parseSimpleType node for node in xml.simpleType
 
+    # TODO: Process all Attributes definition.
     # TODO: Process all AttributeGroup
     # TODO: Process all Group
 
@@ -149,8 +157,9 @@ module.exports =
         .concat((@parseChildrenGroups childrenNode.choice, 'choice'))
         .concat((@parseChildrenGroups childrenNode.sequence, 'sequence'))
 
-    # TODO: Parse attributes
     # TODO: Create snippet from attributes.
+    if node.attribute
+      type.xsdAttribute = (@parseAttribute xattr for xattr in node.attribute)
 
     @types[type.xsdTypeName] = type
     return type
@@ -186,6 +195,16 @@ module.exports =
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node
+
+
+  ## Parse attributes.
+  parseAttribute: (node) ->
+    name: node.$.name
+    type: node.$.type
+    description: @getDocumentation node
+    fixed: node.$.fixed
+    use: node.$.use
+    default: node.$.default
 
 
   ## This takes place after all nodes have been parse. Allow resolve links.
