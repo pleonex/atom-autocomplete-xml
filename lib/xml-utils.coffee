@@ -2,8 +2,8 @@
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
-startTagPattern = '<\s*[\\.\\-_a-zA-Z0-9]+'
-endTagPattern = '<\\/\s*[\\.\\-_a-zA-Z0-9]+'
+startTagPattern = '<\s*[\\.\\-:_a-zA-Z0-9]+'
+endTagPattern = '<\\/\s*[\\.\\-:_a-zA-Z0-9]+'
 autoClosePattern = '\\/>'
 startCommentPattern = '\s*<!--'
 endCommentPattern = '\s*-->'
