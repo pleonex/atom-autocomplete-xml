@@ -159,7 +159,7 @@ module.exports =
 
     # TODO: Create snippet from attributes.
     if node.attribute
-      type.xsdAttribute = (@parseAttribute xattr for xattr in node.attribute)
+      type.xsdAttributes = (@parseAttribute xattr for xattr in node.attribute)
 
     @types[type.xsdTypeName] = type
     return type

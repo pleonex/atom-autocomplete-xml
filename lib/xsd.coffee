@@ -47,7 +47,7 @@ module.exports =
     # TODO: Represent groups in autocompletion
     suggestions = []
     for group in type.xsdChildren
-      suggestions.push @createSuggestion element for element in group.elements
+      suggestions.push @createChildSuggestion el for el in group.elements
 
     # Remove undefined elements (e.g.: non-supported yet types).
     suggestions.filter (n) -> n != undefined
@@ -74,7 +74,7 @@ module.exports =
 
 
   ## Create a suggestion object from a child object.
-  createSuggestion: (child) ->
+  createChildSuggestion: (child) ->
     # The suggestion is a merge between the general type info and the
     # specific information from the child object.
     sug = null
@@ -90,3 +90,22 @@ module.exports =
         type: 'value'
         rightLabel: 'Value'
     return sug
+
+
+  ## Called when suggestion requested for attributes.
+  getAttributes: (xpath) ->
+    # Get the XSD type name from the tag name.
+    type = @findTypeFromXPath xpath
+
+    # Create list of suggestions from attributes
+    return (@createAttributeSuggestion attr for attr in type.xsdAttributes)
+
+
+  ## Create a suggestion from the attribute.
+  createAttributeSuggestion: (attr) ->
+    displayText: attr.name
+    snippet: attr.name + '="${1:' + ((attr.fixed ? attr.default) ? '') + '}"'
+    description: attr.description
+    type: 'attribute'
+    rightLabel: 'Attribute'
+    leftLabel: attr.type

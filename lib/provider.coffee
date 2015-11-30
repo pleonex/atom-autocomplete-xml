@@ -40,6 +40,8 @@ module.exports =
       @getTagNameCompletions options
     else if @isCloseTagName options
       @getCloseTagNameCompletion options
+    else if @isAttribute options
+      @getAttributeCompletions options
     else if @isTagValue options
       @getValuesCompletions options
     else
@@ -54,10 +56,11 @@ module.exports =
 
 
   ## Filter the candidate completions by prefix.
-  filterCompletions: (candidate, prefix) ->
+  filterCompletions: (sugs, prefix) ->
     completions = []
-    for child in candidate when not prefix or child.text.indexOf(prefix) is 0
-      completions.push @buildCompletion child
+    prefix = prefix?.trim()
+    for s in sugs when not prefix or (s.text ? s.snippet).indexOf(prefix) is 0
+      completions.push @buildCompletion s
     return completions
 
 
@@ -65,6 +68,7 @@ module.exports =
   ## contain attributes from previous autocomplete-plus processing.
   buildCompletion: (value) ->
     text: value.text
+    snippet: value.snippet
     displayText: value.displayText
     description: value.description
     type: value.type
@@ -124,3 +128,19 @@ module.exports =
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions children, prefix
+
+
+  ## Checks if the current cursor is about complete attributes.
+  isAttribute: ({scopeDescriptor}) ->
+    scopes = scopeDescriptor.getScopesArray()
+    scopes.indexOf('meta.tag.xml') isnt -1
+
+
+  ## Get the attributes for the current XPath tag.
+  getAttributeCompletions: ({editor, bufferPosition, prefix}) ->
+    # Get the attributes of the current XPath tag.
+    attributes = xsd.getAttributes(
+      utils.getXPath(editor.getBuffer(), bufferPosition, ''))
+
+    # Apply a filter with the current prefix and return.
+    return @filterCompletions attributes, prefix
