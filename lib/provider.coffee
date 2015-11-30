@@ -81,7 +81,7 @@ module.exports =
     {row, column} = bufferPosition
     tagPos = column - prefix.length - 1
     tagChars = editor.getTextInBufferRange([[row, tagPos], [row, tagPos + 1]])
-    return tagChars is '<'
+    return tagChars is '<' or prefix is '<'
 
 
   ## Get the tag name completion.
@@ -91,7 +91,7 @@ module.exports =
       utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
 
     # Apply a filter with the current prefix and return.
-    return @filterCompletions children, prefix
+    return @filterCompletions children, (if prefix is '<' then '' else prefix)
 
 
   ## Checks if the current cursor is to close a tag.
@@ -123,7 +123,7 @@ module.exports =
   ## Get the values of the current XPath tag.
   getValuesCompletions: ({editor, bufferPosition, prefix}) ->
     # Get the children of the current XPath tag.
-    children = xsd.getChildren(
+    children = xsd.getValues(
       utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
 
     # Apply a filter with the current prefix and return.

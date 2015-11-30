@@ -10,6 +10,7 @@ module.exports =
   #   rightLabel: The autocomplete right libel. The XML type of element.
   #   leftLabel: The type of the value.
   #
+  #   xsdType: The XSD type (e.g.: complex, simple, attribute).
   #   xsdTypeName: The name inside the XSD.
   #   xsdChildrenMode: The order of the children: all, sequence or choice.
   #   xsdChildren: References to other types. They are in groups.
@@ -19,7 +20,7 @@ module.exports =
   #     maxOccurs: The group of children cann't appear more than ...
   #     elements: The elements of the group (they must be elements tags).
   #       tagName: The name of the tag.
-  #       xsdType: the type name inside the XSD.
+  #       xsdTypeName: the type name inside the XSD.
   #       description: Optionally. It has priority over type.description.
   #       minOccurs: The children must appear at least ...
   #       maxOcurrs: The children cann't appear more than ...
@@ -50,6 +51,7 @@ module.exports =
     xml.element[0].complexType[0].$ = { name: xml.element[0].$.name }
     @root = @parseComplexType xml.element[0].complexType[0]
     @root.text = @root.xsdTypeName
+    @root.displayText = @root.xsdTypeName
     @root.type = 'class'
     @root.rightLabel = 'Root'
 
@@ -85,6 +87,7 @@ module.exports =
   initTypeObject: (node) ->
     type =
       # XSD params
+      xsdType: ''
       xsdTypeName: node.$.name
       xsdAttributes: []
       xsdChildrenMode: ''
@@ -101,6 +104,7 @@ module.exports =
   ## Parse a SimpleType.
   parseSimpleType: (node) ->
     type = @initTypeObject node
+    type.xsdType = 'simple'
 
     # Get the node that contains the children
     # TODO: Support list children.
@@ -122,7 +126,7 @@ module.exports =
       for val in childrenNode.enumeration
         group.elements.push {
           tagName: val.$.value
-          xsdType: null
+          xsdTypeName: null
           description: ''
           minOccurs: 0
           maxOccurs: 1
@@ -135,6 +139,7 @@ module.exports =
   ## Parse a ComplexType node and children.
   parseComplexType: (node) ->
     type = @initTypeObject node
+    type.xsdType = 'complex'
 
     # Get the node that contains the children.
     childrenNode = null
@@ -192,7 +197,7 @@ module.exports =
   parseChild: (node) ->
     child =
       tagName: node.$.name
-      xsdType: node.$.type
+      xsdTypeName: node.$.type
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node

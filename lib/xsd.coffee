@@ -46,6 +46,8 @@ module.exports =
 
     # Get the XSD type name from the tag name.
     type = @findTypeFromXPath xpath
+    if type.xsdType isnt 'complex'
+      return []
 
     # Create list of suggestions from childrens
     # TODO: Represent groups in autocompletion
@@ -74,27 +76,42 @@ module.exports =
   findTypeFromTag: (tagName, node) ->
     for group in node.xsdChildren
       for el in group.elements
-        return el.xsdType if el.tagName == tagName
+        return el.xsdTypeName if el.tagName == tagName
 
 
   ## Create a suggestion object from a child object.
   createChildSuggestion: (child) ->
     # The suggestion is a merge between the general type info and the
     # specific information from the child object.
-    sug = null
-    if child.xsdType
-      sug = @types[child.xsdType]
-      sug?.text = child.tagName + '>'
-      sug?.displayText = child.tagName
-      sug?.description = child.description ? sug.description
-    else
-      sug =
-        text: child.tagName
-        displayText: child.tagName
-        type: 'value'
-        rightLabel: 'Value'
+    sug = @types[child.xsdTypeName]
+    sug?.text = child.tagName + '>'
+    sug?.displayText = child.tagName
+    sug?.description = child.description ? sug.description
     return sug
 
+
+  ## Get the values from a tag.
+  getValues: (xpath) ->
+    # Get the XSD type name from the tag name.
+    type = @findTypeFromXPath xpath
+    if type.xsdType isnt 'simple'
+      return []
+
+    # Create list of suggestions from childrens
+    # TODO: Represent groups in autocompletion
+    suggestions = []
+    for group in type.xsdChildren
+      suggestions.push @createValueSuggestion el for el in group.elements
+
+    # Remove undefined elements (e.g.: non-supported yet types).
+    suggestions.filter (n) -> n != undefined
+
+  ## Create a suggestion from the tag values.
+  createValueSuggestion: (child) ->
+    text: child.tagName
+    displayText: child.tagName
+    type: 'value'
+    rightLabel: 'Value'
 
   ## Called when suggestion requested for attributes.
   getAttributes: (xpath) ->
