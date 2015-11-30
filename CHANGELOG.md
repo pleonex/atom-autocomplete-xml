@@ -1,3 +1,6 @@
+## 0.7.1
+* Fix getting suggestion for built-in types.
+
 ## 0.7.0
 * Show autocompletion for attributes.
 * Show autocompletion for root node.
