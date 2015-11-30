@@ -2,6 +2,7 @@
 * Show autocompletion for attributes.
 * Show autocompletion for root node.
 * Fix bugs detecting values and tags types.
+* Fix bug detecting parent tag.
 
 ## 0.6.1
 * Fix trying to show completion before loading XSD file.

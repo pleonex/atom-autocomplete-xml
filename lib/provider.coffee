@@ -105,7 +105,8 @@ module.exports =
 
   ## Get the tag name that close the current one.
   getCloseTagNameCompletion: ({editor, bufferPosition, prefix}) ->
-    parentTag = utils.getXPath(editor.getBuffer(), bufferPosition, prefix, 1)[0]
+    parentTag = utils.getXPath(editor.getBuffer(),bufferPosition,prefix,1)
+    parentTag = parentTag[parentTag.length - 1]
     return [{
       text: parentTag + '>'
       displayText: parentTag
