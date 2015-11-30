@@ -1,3 +1,6 @@
+## 0.6.1
+* Fix trying to show completion before loading XSD file.
+
 ## 0.6.0
 * Improve detection of autocompletion type.
 * Show autocompletion for close tags.

@@ -29,9 +29,9 @@ module.exports =
     else if newUri == @lastXsdUri
       @detectAndGetSuggestions options
     else
-      @lastXsdUri = newUri
       new Promise (resolve) =>
         xsd.load options.editor.getPath(), newUri, =>
+          @lastXsdUri = newUri
           resolve @detectAndGetSuggestions options
 
 
