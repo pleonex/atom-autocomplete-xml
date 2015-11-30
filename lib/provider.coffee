@@ -131,9 +131,11 @@ module.exports =
 
 
   ## Checks if the current cursor is about complete attributes.
-  isAttribute: ({scopeDescriptor}) ->
+  isAttribute: ({scopeDescriptor, editor, bufferPosition}) ->
+    {row, column} = bufferPosition
+    previousChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
     scopes = scopeDescriptor.getScopesArray()
-    scopes.indexOf('meta.tag.xml') isnt -1
+    scopes.indexOf('meta.tag.xml') isnt -1 and previousChar isnt '>'
 
 
   ## Get the attributes for the current XPath tag.

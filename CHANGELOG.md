@@ -1,5 +1,6 @@
 ## 0.7.0
 * Show autocompletion for attributes.
+* Show autocompletion for root node.
 
 ## 0.6.1
 * Fix trying to show completion before loading XSD file.
