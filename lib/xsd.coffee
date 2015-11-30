@@ -40,6 +40,10 @@ module.exports =
 
   ## Called when suggestion requested. Get all the possible node children.
   getChildren: (xpath) ->
+    # If there is no path, we need a root node first!
+    if xpath.length == 0
+      return [xsdParser.root]
+
     # Get the XSD type name from the tag name.
     type = @findTypeFromXPath xpath
 

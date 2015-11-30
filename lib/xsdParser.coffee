@@ -49,6 +49,7 @@ module.exports =
     # But the name is in the element instead of complexType tag.
     xml.element[0].complexType[0].$ = { name: xml.element[0].$.name }
     @root = @parseComplexType xml.element[0].complexType[0]
+    @root.text = @root.xsdTypeName
     @root.type = 'class'
     @root.rightLabel = 'Root'
 
