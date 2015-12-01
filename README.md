@@ -1,5 +1,10 @@
 # Autocomplete XML Atom Package
+
+![Downloads](https://img.shields.io/apm/dm/autocomplete-xml.svg)
+![Version](https://img.shields.io/apm/v/autocomplete-xml.svg)
+![License](https://img.shields.io/apm/l/autocomplete-xml.svg)
 ![Dependencies](https://david-dm.org/pleonex/atom-autocomplete-xml.svg)
+
 
 XML tag autocompletion for Atom text editor!
 
