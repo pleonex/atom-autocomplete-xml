@@ -38,6 +38,7 @@ module.exports =
     xml2js.parseString xmlString, {
       tagNameProcessors: [xml2js.processors.stripPrefix] # Strip nm prefix
       }, (err, result) =>
+        throw new Error(err) if err
         @parse(result, complete)
 
 

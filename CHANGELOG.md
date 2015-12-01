@@ -1,3 +1,6 @@
+## 0.7.2
+* Fix #5 - Support HTTPS addresses.
+
 ## 0.7.1
 * Fix getting suggestion for built-in types.
 

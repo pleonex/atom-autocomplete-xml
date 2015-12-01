@@ -1,4 +1,5 @@
 http = require 'http'
+https = require 'https'
 fs = require 'fs'
 path = require 'path'
 xsdParser = require './xsdParser'
@@ -14,17 +15,25 @@ module.exports =
 
   ## Load a new XSD.
   load: (xmlPath, xsdUri, complete) ->
+    # Get the protocol used to download the file.
+    protocol = null
     if xsdUri.substr(0, 7) is "http://"
+      protocol = http
+    else if xsdUri.substr(0, 8) is "https://"
+      protocol = https
+
+    if protocol
       # Download the file
-      http.get xsdUri, (res) =>
+      protocol.get(xsdUri, (res) =>
         body = ''
         res.on 'data', (chunk) ->
           body += chunk;
 
         # On complete, parse XSD
         res.on 'end', =>
-          @types = xsdParser.types
-          xsdParser.parseFromString(body, complete)
+          @parseFromString(body, complete)
+      ).on 'error', (e) ->
+        throw new Error(e)
     else
       # Get the base path. In absolute path nothing, in relative the file dir.
       if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
@@ -34,8 +43,14 @@ module.exports =
 
       # Read the file from disk
       fs.readFile path.join(basePath, xsdUri), (err, data) =>
-        @types = xsdParser.types
-        xsdParser.parseFromString(data, complete)
+        throw new Error(err) if err
+        @parseFromString(data, complete)
+
+
+  ## Parse the the XML
+  parseFromString: (data, complete) ->
+    @types = xsdParser.types
+    xsdParser.parseFromString(data, complete)
 
 
   ## Called when suggestion requested. Get all the possible node children.
