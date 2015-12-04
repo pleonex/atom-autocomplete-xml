@@ -1,4 +1,5 @@
 xml2js = require 'xml2js'
+uuid = require 'uuid'
 
 module.exports =
   # Expected type object from external modules.
@@ -37,6 +38,8 @@ module.exports =
   parseFromString: (xmlString, complete) ->
     xml2js.parseString xmlString, {
       tagNameProcessors: [xml2js.processors.stripPrefix] # Strip nm prefix
+      preserveChildrenOrder: true
+      explicitChildren: true
       }, (err, result) =>
         throw new Error(err) if err
         @parse(result, complete)
@@ -47,20 +50,17 @@ module.exports =
     # Go to root node
     xml = xml.schema
 
-    # Process the root node (Element type). Like a Complex type
-    # But the name is in the element instead of complexType tag.
-    xml.element[0].complexType[0].$ = { name: xml.element[0].$.name }
-    @root = @parseComplexType xml.element[0].complexType[0]
-    @root.text = @root.xsdTypeName
-    @root.displayText = @root.xsdTypeName
+    # Process all ComplexTypes and SimpleTypes
+    @parseType node for node in xml.$$
+
+    # Process the root node (Element type).
+    @root = @parseElement xml.element[0]
+    rootTagName = @root.tagName
+    @root = @types[@root.xsdTypeName]
+    @root.text = rootTagName
+    @root.displayText = rootTagName
     @root.type = 'class'
     @root.rightLabel = 'Root'
-
-    # Process all ComplexTypes
-    @parseComplexType node for node in xml.complexType
-
-    # Process all SimpleTypes
-    @parseSimpleType node for node in xml.simpleType
 
     # TODO: Process all Attributes definition.
     # TODO: Process all AttributeGroup
@@ -71,6 +71,19 @@ module.exports =
 
     console.log @types
     complete()
+
+
+  ## Parse a node type.
+  parseType: (node, typeName) ->
+    # Create a basic type from the common fields.
+    type = @initTypeObject node, typeName
+
+    # Parse by node type.
+    nodeName = node["#name"]
+    if nodeName is "simpleType"
+      @parseSimpleType node, type
+    else if nodeName is "complexType"
+      @parseComplexType node, type
 
 
   ## Remove new line chars and trim spaces.
@@ -85,11 +98,11 @@ module.exports =
 
 
   # Initialize a type object from a Simple or Complex type node.
-  initTypeObject: (node) ->
+  initTypeObject: (node, typeName) ->
     type =
       # XSD params
       xsdType: ''
-      xsdTypeName: node.$.name
+      xsdTypeName: typeName ? node.$.name
       xsdAttributes: []
       xsdChildrenMode: ''
       xsdChildren: []
@@ -103,8 +116,7 @@ module.exports =
 
 
   ## Parse a SimpleType.
-  parseSimpleType: (node) ->
-    type = @initTypeObject node
+  parseSimpleType: (node, type) ->
     type.xsdType = 'simple'
 
     # Get the node that contains the children
@@ -138,8 +150,7 @@ module.exports =
 
 
   ## Parse a ComplexType node and children.
-  parseComplexType: (node) ->
-    type = @initTypeObject node
+  parseComplexType: (node, type) ->
     type.xsdType = 'complex'
 
     # Get the node that contains the children.
@@ -179,30 +190,35 @@ module.exports =
 
     # For each element/sequence/choice node, create a group object.
     groups = []
-    for groupNode in groupNodes
+    for node in groupNodes
       groups.push {
         childType: mode
-        description: @getDocumentation groupNode
-        minOccurs: groupNode.$?.minOccurs ? 0
-        maxOccurs: groupNode.$?.maxOccurs ? 'unbounded'
+        description: @getDocumentation node
+        minOccurs: node.$?.minOccurs ? 0
+        maxOccurs: node.$?.maxOccurs ? 'unbounded'
 
-        # We don't support more recursive levels -> check only for elements
         # If the mode is element, the elements is itself.
-        elements: if mode == 'element' then [].concat @parseChild groupNode else
-          (@parseChild childNode for childNode in (groupNode.element ? []))
+        elements: if mode is 'element' then [].concat @parseElement node else
+          (@parseElement childNode for childNode in (node.element ? []))
       }
     return groups
 
 
   ## Parse a child node.
-  parseChild: (node) ->
+  parseElement: (node) ->
     child =
       tagName: node.$.name
-      xsdTypeName: node.$.type
+      xsdTypeName: node.$.type ? node.$.ref  # TODO: Check that.
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node
 
+    # If the element type is defined inside.
+    if not child.xsdTypeName
+      child.xsdTypeName = uuid()
+      @parseType node.$$[0], child.xsdTypeName
+
+    return child
 
   ## Parse attributes.
   parseAttribute: (node) ->

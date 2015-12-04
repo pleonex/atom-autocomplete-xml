@@ -1,3 +1,6 @@
+## 0.7.3
+* Fix #6 - Parse self-contained types.
+
 ## 0.7.2
 * Fix #5 - Support HTTPS addresses.
 
