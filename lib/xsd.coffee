@@ -57,11 +57,11 @@ module.exports =
   getChildren: (xpath) ->
     # If there is no path, we need a root node first!
     if xpath.length == 0
-      return [xsdParser.root]
+      return (value for name, value of xsdParser.roots)
 
     # Get the XSD type name from the tag name.
     type = @findTypeFromXPath xpath
-    if type.xsdType isnt 'complex'
+    if not type or type.xsdType isnt 'complex'
       return []
 
     # Create list of suggestions from childrens
@@ -76,7 +76,7 @@ module.exports =
 
   ## Search the type from the XPath
   findTypeFromXPath: (xpath) ->
-    type = xsdParser.root
+    type = xsdParser.roots[xpath[0]]
     xpath.shift()  # Remove root node.
 
     while xpath && xpath.length > 0
@@ -112,7 +112,7 @@ module.exports =
   getValues: (xpath) ->
     # Get the XSD type name from the tag name.
     type = @findTypeFromXPath xpath
-    if type.xsdType isnt 'simple'
+    if not type or type.xsdType isnt 'simple'
       return []
 
     # Create list of suggestions from childrens
@@ -135,6 +135,8 @@ module.exports =
   getAttributes: (xpath) ->
     # Get the XSD type name from the tag name.
     type = @findTypeFromXPath xpath
+    if not type
+      return []
 
     # Create list of suggestions from attributes
     return (@createAttributeSuggestion attr for attr in type.xsdAttributes)

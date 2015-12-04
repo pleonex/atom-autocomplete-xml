@@ -33,7 +33,7 @@ module.exports =
   #    use: If the attribute must be present or not. Default: false.
   #    default: Thea attribute default value.
   types: {}
-  root: null
+  roots: {}
 
   parseFromString: (xmlString, complete) ->
     xml2js.parseString xmlString, {
@@ -54,13 +54,7 @@ module.exports =
     @parseType node for node in xml.$$
 
     # Process the root node (Element type).
-    @root = @parseElement xml.element[0]
-    rootTagName = @root.tagName
-    @root = @types[@root.xsdTypeName]
-    @root.text = rootTagName
-    @root.displayText = rootTagName
-    @root.type = 'class'
-    @root.rightLabel = 'Root'
+    @parseRoot node for node in xml.element
 
     # TODO: Process all Attributes definition.
     # TODO: Process all AttributeGroup
@@ -228,6 +222,23 @@ module.exports =
     fixed: node.$.fixed
     use: node.$.use
     default: node.$.default
+
+
+  ## Parse the root node.
+  parseRoot: (node) ->
+    # First parse the node as a element
+    root = @parseElement node
+    rootTagName = root.tagName
+
+    # Now convert to a complex type by just getting its contained type.
+    root = @types[root.xsdTypeName]
+    root.text = rootTagName
+    root.displayText = rootTagName
+    root.type = 'class'
+    root.rightLabel = 'Root'
+
+    @roots[rootTagName] = root
+    return root
 
 
   ## This takes place after all nodes have been parse. Allow resolve links.
