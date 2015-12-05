@@ -1,5 +1,6 @@
 ## 0.7.4
 * Fix using a root type as children too.
+* Missing "uuid" dependency
 
 ## 0.7.3
 * Fix #6 - Parse self-contained types AND multiple roots to choose.
