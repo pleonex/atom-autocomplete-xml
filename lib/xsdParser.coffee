@@ -35,6 +35,7 @@ module.exports =
   #    default: Thea attribute default value.
   types: {}
   roots: {}
+  attributeGroups: {}
 
   parseFromString: (xmlString, complete) ->
     xml2js.parseString xmlString, {
@@ -56,8 +57,8 @@ module.exports =
     # Process the root node (Element type).
     @parseRoot node for node in xml.element
 
-    # TODO: Process all Attributes definition.
-    # TODO: Process all AttributeGroup
+    # Process all AttributeGroup (not regular types).
+    @parseAttributeGroup node for node in xml.attributeGroup
 
     # Post parse the nodes and resolve links.
     @postParsing()
@@ -176,7 +177,7 @@ module.exports =
 
     # TODO: Create snippet from attributes.
     if node.attribute
-      type.xsdAttributes = (@parseAttribute xattr for xattr in node.attribute)
+      type.xsdAttributes = (@parseAttribute n for n in node.$$).filter Boolean
 
     @types[type.xsdTypeName] = type
     return type
@@ -222,12 +223,27 @@ module.exports =
 
   ## Parse attributes.
   parseAttribute: (node) ->
-    name: node.$.name
-    type: node.$.type
-    description: @getDocumentation node
-    fixed: node.$.fixed
-    use: node.$.use
-    default: node.$.default
+    nodeName = node["#name"]
+    if nodeName is "attribute"
+      return {
+        name: node.$.name
+        type: node.$.type
+        description: @getDocumentation node
+        fixed: node.$.fixed
+        use: node.$.use
+        default: node.$.default
+      }
+    else if nodeName is "attributeGroup"
+      return {ref: node.$.ref}
+    else
+      return null
+
+
+  ## Parse a AttributeGroup node.
+  parseAttributeGroup: (node) ->
+    name = node.$.name
+    attributes = (@parseAttribute xattr for xattr in node.$$).filter Boolean
+    @attributeGroups[name] = attributes
 
 
   ## Parse a group node.
@@ -267,7 +283,7 @@ module.exports =
       # If the children type is extension, resolve the link.
       if type.xsdChildrenMode == 'extension'
         extenType = type.xsdChildren
-        extenAttr = (@parseAttribute xattr for xattr in extenType.attribute)
+        extenAttr = (@parseAttribute n for n in extenType.$$).filter Boolean
 
         # Copy fields from base
         linkType = @types[extenType.$.base]
@@ -296,3 +312,13 @@ module.exports =
           linkType = @types[group.ref]
           type.xsdChildren = linkType.xsdChildren
           break
+
+      # Add the attributes from the group attributes
+      groups = (attr.ref for attr in type.xsdAttributes when attr.ref)
+      attributes = []
+      for attr in type.xsdAttributes
+        if attr.ref
+          attributes = attributes.concat @attributeGroups[attr.ref]
+        else
+          attributes.push attr
+      type.xsdAttributes = attributes
