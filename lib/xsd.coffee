@@ -78,7 +78,7 @@ module.exports =
     type = xsdParser.roots[xpath[0]]
     xpath.shift()  # Remove root node.
 
-    while xpath && xpath.length > 0
+    while xpath && xpath.length > 0 && type
       nextTag = xpath.shift()
       nextTypeName = @findTypeFromTag nextTag, type
       type = @types[nextTypeName]

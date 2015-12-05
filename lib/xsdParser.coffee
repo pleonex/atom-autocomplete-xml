@@ -58,12 +58,11 @@ module.exports =
 
     # TODO: Process all Attributes definition.
     # TODO: Process all AttributeGroup
-    # TODO: Process all Group
 
     # Post parse the nodes and resolve links.
     @postParsing()
 
-    console.log @types
+    # Return calling the complete callback.
     complete()
 
 
