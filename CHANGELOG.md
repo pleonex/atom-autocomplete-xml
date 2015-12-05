@@ -1,3 +1,6 @@
+## 0.7.4
+* Fix using a root type as children too.
+
 ## 0.7.3
 * Fix #6 - Parse self-contained types AND multiple roots to choose.
 * Fix minor bug trying to get completion from non defined types.

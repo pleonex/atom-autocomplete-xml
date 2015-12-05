@@ -90,8 +90,8 @@ module.exports =
 
   ## Get documentation string from node
   getDocumentation: (node) ->
-    @normalizeString(node.annotation?[0].documentation[0]._ ?
-      node.annotation?[0].documentation[0])
+    @normalizeString(node?.annotation?[0].documentation[0]._ ?
+      node?.annotation?[0].documentation[0])
 
 
   # Initialize a type object from a Simple or Complex type node.
@@ -209,8 +209,8 @@ module.exports =
   ## Parse a child node.
   parseElement: (node) ->
     child =
-      tagName: node.$.name
-      xsdTypeName: node.$.type ? node.$.ref  # TODO: Check that.
+      tagName: node.$.name ? node.$.ref
+      xsdTypeName: node.$.type ? node.$.ref
       minOccurs: node.$.minOccurs ? 0
       maxOccurs: node.$.maxOccurs ? 'unbounded'
       description: @getDocumentation node
@@ -240,15 +240,23 @@ module.exports =
   ## Parse the root node.
   parseRoot: (node) ->
     # First parse the node as a element
-    root = @parseElement node
-    rootTagName = root.tagName
+    rootElement = @parseElement node
+    rootTagName = rootElement.tagName
+    rootType = @types[rootElement.xsdTypeName]
 
-    # Now convert to a complex type by just getting its contained type.
-    root = @types[root.xsdTypeName]
+    # Now create a complex type.
+    root = @initTypeObject null, rootElement.xsdTypeName
+    root.description = rootType.description
     root.text = rootTagName
     root.displayText = rootTagName
     root.type = 'class'
     root.rightLabel = 'Root'
+    root.xsdType = 'complex'
+
+    # Copy the type into the root object.
+    root.xsdAttributes = rootType.xsdAttributes
+    root.xsdChildrenMode = rootType.xsdChildrenMode
+    root.xsdChildren = rootType.xsdChildren
 
     @roots[rootTagName] = root
     return root
