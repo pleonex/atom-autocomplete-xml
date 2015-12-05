@@ -49,7 +49,8 @@ module.exports =
   ## Parse the the XML
   parseFromString: (data, complete) ->
     @types = xsdParser.types
-    xsdParser.parseFromString(data, complete)
+    xsdParser.parseFromString data
+    complete()
 
 
   ## Called when suggestion requested. Get all the possible node children.

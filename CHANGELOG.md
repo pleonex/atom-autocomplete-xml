@@ -1,3 +1,6 @@
+## 0.7.6
+* Only parse XSD documents that follows the W3C standard.
+
 ## 0.7.5
 * Merge attributes from extension types.
 * Throw errors to console to not annoy the user.

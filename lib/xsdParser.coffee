@@ -51,6 +51,16 @@ module.exports =
     # Go to root node
     xml = xml.schema
 
+    # Check that there is a schema
+    if not xml
+      return
+
+    # Check that the schema follow the standard
+    xsdStandard = xml.$["xmlns:xs"]
+    if not xsdStandard or xsdStandard isnt "http://www.w3.org/2001/XMLSchema"
+      console.log "The schema doesn't follow the standard."
+      return
+
     # Process all ComplexTypes and SimpleTypes
     @parseType node for node in xml.$$
 
@@ -62,9 +72,6 @@ module.exports =
 
     # Post parse the nodes and resolve links.
     @postParsing()
-
-    # Return calling the complete callback.
-    complete()
 
 
   ## Parse a node type.
