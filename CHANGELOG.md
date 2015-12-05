@@ -1,3 +1,6 @@
+## 0.7.5
+* Merge attributes from extension types.
+
 ## 0.7.4
 * Fix using a root type as children too.
 * Missing "uuid" dependency

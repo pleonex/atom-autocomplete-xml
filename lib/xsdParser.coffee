@@ -268,17 +268,18 @@ module.exports =
     for name, type of @types
       # If the children type is extension, resolve the link.
       if type.xsdChildrenMode == 'extension'
-        extensionType = type.xsdChildren
+        extenType = type.xsdChildren
+        extenAttr = (@parseAttribute xattr for xattr in extenType.attribute)
 
         # Copy fields from base
-        linkType = @types[extensionType.$.base]
+        linkType = @types[extenType.$.base]
         type.xsdTypeName = linkType.xsdTypeName
         type.xsdChildrenMode = linkType.xsdChildrenMode
         type.xsdChildren = linkType.xsdChildren
+        type.xsdAttributes = extenAttr.concat linkType.xsdAttributes
         type.description ?= linkType.description
         type.type = linkType.type
         type.rightLabel = linkType.rightLabel
-        # TODO: Add extensions (e.g.: attributes)
 
       # If it's a group, resolve the link
       else if type.xsdChildrenMode == 'group'
