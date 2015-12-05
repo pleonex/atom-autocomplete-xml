@@ -1,6 +1,7 @@
 ## 0.7.3
 * Fix #6 - Parse self-contained types AND multiple roots to choose.
 * Fix minor bug trying to get completion from non defined types.
+* Support groups XSD types.
 
 ## 0.7.2
 * Fix #5 - Support HTTPS addresses.

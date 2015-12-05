@@ -16,6 +16,7 @@ module.exports =
   #   xsdChildrenMode: The order of the children: all, sequence or choice.
   #   xsdChildren: References to other types. They are in groups.
   #     childType: The type of children nodes group: element, sequence or choice
+  #     ref: Only for groups. Group name with the elements.
   #     description: Optionally. Not sure where it will fit.
   #     minOccurs: The group of children must appear at least...
   #     maxOccurs: The group of children cann't appear more than ...
@@ -78,6 +79,8 @@ module.exports =
       @parseSimpleType node, type
     else if nodeName is "complexType"
       @parseComplexType node, type
+    else if nodeName is "group"
+      @parseGroupType node, type
 
 
   ## Remove new line chars and trim spaces.
@@ -161,6 +164,9 @@ module.exports =
     else if node.complexContent?[0].extension
       type.xsdChildrenMode = 'extension'
       type.xsdChildren = node.complexContent[0].extension[0]
+    else if node.group
+      type.xsdChildrenMode = 'group'
+      type.xsdChildren = node.group[0]
 
     # The children are in groups of type: element, sequence or choice.
     if childrenNode
@@ -168,6 +174,7 @@ module.exports =
         (@parseChildrenGroups childrenNode.element, 'element')
         .concat((@parseChildrenGroups childrenNode.choice, 'choice'))
         .concat((@parseChildrenGroups childrenNode.sequence, 'sequence'))
+        .concat((@parseChildrenGroups childrenNode.group, 'group'))
 
     # TODO: Create snippet from attributes.
     if node.attribute
@@ -187,6 +194,7 @@ module.exports =
     for node in groupNodes
       groups.push {
         childType: mode
+        ref: node.$?.ref
         description: @getDocumentation node
         minOccurs: node.$?.minOccurs ? 0
         maxOccurs: node.$?.maxOccurs ? 'unbounded'
@@ -224,6 +232,11 @@ module.exports =
     default: node.$.default
 
 
+  ## Parse a group node.
+  parseGroupType: (node, type) ->
+    @parseComplexType(node, type)
+
+
   ## Parse the root node.
   parseRoot: (node) ->
     # First parse the node as a element
@@ -245,7 +258,6 @@ module.exports =
   postParsing: ->
     # Post process all nodes
     for name, type of @types
-
       # If the children type is extension, resolve the link.
       if type.xsdChildrenMode == 'extension'
         extensionType = type.xsdChildren
@@ -258,5 +270,22 @@ module.exports =
         type.description ?= linkType.description
         type.type = linkType.type
         type.rightLabel = linkType.rightLabel
-
         # TODO: Add extensions (e.g.: attributes)
+
+      # If it's a group, resolve the link
+      else if type.xsdChildrenMode == 'group'
+        groupType = type.xsdChildren
+
+        # Copy the children
+        linkType = @types[groupType.$.ref]
+        type.xsdChildren = linkType.xsdChildren
+        type.xsdChildrenMode = linkType.xsdChildrenMode
+
+      # At the moment, I think it only makes sense if it replaces all the
+      # elements. Consider a group that contains a sequence of choice elements.
+      # We don't support sequence->sequence(from group)->choide->elements.
+      for group in type.xsdChildren
+        if group.childType is 'group'
+          linkType = @types[group.ref]
+          type.xsdChildren = linkType.xsdChildren
+          break
