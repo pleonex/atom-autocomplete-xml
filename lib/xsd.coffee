@@ -33,7 +33,7 @@ module.exports =
         res.on 'end', =>
           @parseFromString(body, complete)
       ).on 'error', (e) ->
-        throw new Error(e)
+        console.error e
     else
       # Get the base path. In absolute path nothing, in relative the file dir.
       if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
@@ -43,8 +43,7 @@ module.exports =
 
       # Read the file from disk
       fs.readFile path.join(basePath, xsdUri), (err, data) =>
-        throw new Error(err) if err
-        @parseFromString(data, complete)
+        if err then console.error err else @parseFromString(data, complete)
 
 
   ## Parse the the XML

@@ -1,5 +1,6 @@
 ## 0.7.5
 * Merge attributes from extension types.
+* Throw errors to console to not annoy the user.
 
 ## 0.7.4
 * Fix using a root type as children too.

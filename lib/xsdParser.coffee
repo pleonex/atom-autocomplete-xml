@@ -42,8 +42,7 @@ module.exports =
       preserveChildrenOrder: true
       explicitChildren: true
       }, (err, result) =>
-        throw new Error(err) if err
-        @parse(result, complete)
+        if err then console.error err else @parse(result, complete)
 
 
   ## Parrse the XSD file. Prepare types and children.
