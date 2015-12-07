@@ -68,7 +68,7 @@ module.exports =
     @parseRoot node for node in xml.element
 
     # Process all AttributeGroup (not regular types).
-    @parseAttributeGroup node for node in xml.attributeGroup
+    @parseAttributeGroup node for node in (xml.attributeGroup ? [])
 
     # Post parse the nodes and resolve links.
     @postParsing()
@@ -222,7 +222,7 @@ module.exports =
       description: @getDocumentation node
 
     # If the element type is defined inside.
-    if not child.xsdTypeName
+    if not child.xsdTypeName and node.$$
       # Create a randome type name and parse the child.
       # Iterate to skip "annotation", etc. It should ignore all except one.
       child.xsdTypeName = uuid()
@@ -292,7 +292,8 @@ module.exports =
       # If the children type is extension, resolve the link.
       if type.xsdChildrenMode == 'extension'
         extenType = type.xsdChildren
-        extenAttr = (@parseAttribute n for n in extenType.$$).filter Boolean
+        extenAttr = (@parseAttribute n for n in (extenType.$$ or []))
+          .filter Boolean
 
         # Copy fields from base
         linkType = @types[extenType.$.base]
