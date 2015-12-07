@@ -1,5 +1,6 @@
 ## 0.7.6
 * Only parse XSD documents that follows the W3C standard.
+* Show autocompletation only for XML that asks validation.
 * Fix elements with a self-definition with first element "annotation".
 * Fix several bugs assuming some tags were present.
 * Fix using root elements as root child.

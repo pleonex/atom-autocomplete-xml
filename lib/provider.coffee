@@ -1,6 +1,7 @@
 xsd = require './xsd'
 utils = require './xml-utils'
 
+xmlValidation = /xmlns:xsi="http:\/\/www.w3.org\/2001\/XMLSchema-instance"/
 xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
 
 module.exports =
@@ -50,9 +51,9 @@ module.exports =
 
   ## Get XSD URI
   getXsdUri: ({editor}) ->
-    # Get the XSD url
+    # Get the XSD url only if the XML ask for validation.
     txt = editor.getText()
-    uri = txt.match(xsdPattern)?[1]
+    if txt.match(xmlValidation) then uri = txt.match(xsdPattern)?[1] else null
 
 
   ## Filter the candidate completions by prefix.
