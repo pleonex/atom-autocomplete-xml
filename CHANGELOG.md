@@ -1,5 +1,6 @@
 ## 0.7.6
 * Only parse XSD documents that follows the W3C standard.
+* Fix elements with a self-definition with first element "annotation".
 
 ## 0.7.5
 * Merge attributes from extension types.

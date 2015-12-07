@@ -223,8 +223,10 @@ module.exports =
 
     # If the element type is defined inside.
     if not child.xsdTypeName
+      # Create a randome type name and parse the child.
+      # Iterate to skip "annotation", etc. It should ignore all except one.
       child.xsdTypeName = uuid()
-      @parseType node.$$[0], child.xsdTypeName
+      @parseType childNode, child.xsdTypeName for childNode in node.$$
 
     return child
 
@@ -267,7 +269,7 @@ module.exports =
 
     # Now create a complex type.
     root = @initTypeObject null, rootElement.xsdTypeName
-    root.description = rootType.description
+    root.description = rootElement.description ? rootType.description
     root.text = rootTagName
     root.displayText = rootTagName
     root.type = 'class'
