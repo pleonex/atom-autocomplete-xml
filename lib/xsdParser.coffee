@@ -67,6 +67,9 @@ module.exports =
     # Process the root node (Element type).
     @parseRoot node for node in xml.element
 
+    # Copy root types into types since they could be used too.
+    @types[name] = value for name, value of @roots
+
     # Process all AttributeGroup (not regular types).
     @parseAttributeGroup node for node in (xml.attributeGroup ? [])
 

@@ -103,9 +103,9 @@ module.exports =
       text: child.tagName + '>'
       displayText: child.tagName
       description: child.description ? childType?.description
-      type: childType?.type
-      rightLabel: childType?.rightLabel
-      leftLabel: childType?.leftLabel
+      type: 'tag'
+      rightLabel: 'Tag'
+      leftLabel: childType?.leftLabel ? (child.xsdTypeName if not childType)
 
 
   ## Get the values from a tag.
