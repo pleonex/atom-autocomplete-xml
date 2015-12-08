@@ -3,6 +3,7 @@
 * New configuration to add automatically the closing tag too.
 * Parse XSD union SimpleType restriction.
 * Autocomplete attribute values.
+* Fix not autocompleting attributes for empty tags.
 
 ## 0.7.6
 * Only parse XSD documents that follows the W3C standard.

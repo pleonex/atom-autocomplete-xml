@@ -139,7 +139,9 @@ module.exports =
     {row, column} = bufferPosition
     previousChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
     scopes = scopeDescriptor.getScopesArray()
-    scopes.indexOf('meta.tag.xml') isnt -1 and previousChar isnt '>'
+    (scopes.indexOf('meta.tag.xml') isnt -1 or
+      scopes.indexOf('meta.tag.no-content.xml') isnt -1) and
+      previousChar isnt '>'
 
 
   ## Get the attributes for the current XPath tag.
