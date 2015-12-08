@@ -127,13 +127,16 @@ module.exports =
 
     # Get the node that contains the children
     # TODO: Support list children.
-    # TODO: Support union children.
     # TODO: Support more restriction types.
     if node.restriction?[0].enumeration
       type.xsdChildrenMode = 'restriction'
       childrenNode = node.restriction[0]
       type.leftLabel = childrenNode.$.base
+    else if node.union
+      type.xsdChildrenMode = 'union'
+      type.leftLabel = node.union[0].$.memberTypes
 
+    if childrenNode
       group =
         childType: 'choice'
         description: ''
@@ -316,6 +319,14 @@ module.exports =
         linkType = @types[groupType.$.ref]
         type.xsdChildren = linkType.xsdChildren
         type.xsdChildrenMode = linkType.xsdChildrenMode
+
+      # If it's an union, merge the single types
+      else if type.xsdChildrenMode is 'union'
+        unionTypes = type.leftLabel.split(' ')
+        type.xsdChildrenMode = 'restriction'
+        for t in unionTypes
+          memberType = @types[t]
+          type.xsdChildren.push memberType.xsdChildren[0] if memberType
 
       # At the moment, I think it only makes sense if it replaces all the
       # elements. Consider a group that contains a sequence of choice elements.

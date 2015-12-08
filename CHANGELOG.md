@@ -1,3 +1,6 @@
+## 0.8.0
+* Parse XSD union SimpleType restriction.
+
 ## 0.7.6
 * Only parse XSD documents that follows the W3C standard.
 * Show autocompletation only for XML that asks validation.
