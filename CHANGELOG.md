@@ -1,5 +1,6 @@
 ## 0.8.0
 * Parse XSD union SimpleType restriction.
+* Autocomplete attribute values.
 
 ## 0.7.6
 * Only parse XSD documents that follows the W3C standard.

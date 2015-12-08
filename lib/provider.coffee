@@ -41,6 +41,8 @@ module.exports =
       @getTagNameCompletions options
     else if @isCloseTagName options
       @getCloseTagNameCompletion options
+    else if @isAttributeValue options
+      @getAttributeValueCompletions options
     else if @isAttribute options
       @getAttributeCompletions options
     else if @isTagValue options
@@ -148,3 +150,27 @@ module.exports =
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions attributes, prefix
+
+  ## Check if the cursor is about complete the value of an attribute.
+  isAttributeValue: ({scopeDescriptor, prefix}) ->
+    scopes = scopeDescriptor.getScopesArray()
+    scopes.indexOf('string.quoted.double.xml') isnt -1
+
+  ## Get the attribute values.
+  getAttributeValueCompletions: ({editor, prefix, bufferPosition}) ->
+    {row, column} = bufferPosition
+
+    # Get the attribute name
+    line = editor.getTextInBufferRange([[row, 0], [row, column-prefix.length]])
+    attrNamePattern = /[\.\-:_a-zA-Z0-9]+=/g
+    attrName = matches = line.match(attrNamePattern)?.reverse()[0]
+    attrName = attrName.slice 0, -1
+
+    # Get the XPath
+    xpath = utils.getXPath(editor.getBuffer(), bufferPosition, '')
+
+    # Get the children of the XPath
+    children = xsd.getAttributeValues xpath, attrName
+
+    # Apply a filter with the current prefix and return.
+    return @filterCompletions children, prefix

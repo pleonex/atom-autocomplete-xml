@@ -124,6 +124,29 @@ module.exports =
     # Remove undefined elements (e.g.: non-supported yet types).
     suggestions.filter (n) -> n != undefined
 
+
+  ## Get attribute value.
+  getAttributeValues: (xpath, attrName) ->
+    # Get the XSD type name of the tag name
+    type = @findTypeFromXPath xpath
+    if not type
+      return []
+
+    # Get the attribute type
+    attribute = (attr for attr in type.xsdAttributes when attr.name is attrName)
+    attrType = @types[attribute[0]?.type]
+    if not attrType
+      return []
+
+    # Create list of suggestions from childrens
+    # TODO: Represent groups in autocompletion
+    suggestions = []
+    for group in attrType.xsdChildren
+      suggestions.push @createValueSuggestion el for el in group.elements
+
+    # Remove undefined elements (e.g.: non-supported yet types).
+    suggestions.filter (n) -> n != undefined
+
   ## Create a suggestion from the tag values.
   createValueSuggestion: (child) ->
     text: child.tagName
