@@ -239,7 +239,7 @@ module.exports =
   ## Parse attributes.
   parseAttribute: (node) ->
     nodeName = node["#name"]
-    if nodeName is "attribute"
+    if nodeName is "attribute" and node.$.use isnt "prohibited"
       return {
         name: node.$.name
         type: node.$.type
