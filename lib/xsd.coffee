@@ -99,10 +99,24 @@ module.exports =
     # The suggestion is a merge between the general type info and the
     # specific information from the child object.
     childType = @types[child.xsdTypeName]
-    closingTag = '${1:}</' + child.tagName + '>'
+
+    # Create the snippet
+    snippet = child.tagName
+
+    # Add the must-be attributes
+    snippetId = 1
+    for attr in (childType?.xsdAttributes or []) when attr.use is 'required'
+      snippet += " #{attr.name}=\""
+      snippet += "${#{snippetId++}:#{(attr.fixed ? attr.default) ? ''}}\""
+    snippet += ">"
+
+    # Add the closing tag if so
     closingConfig = atom.config.get 'autocomplete-xml.addClosingTag'
+    snippet += "${#{snippetId++}:}</" + child.tagName + '>' if closingConfig
+
+    # Create the suggestion
     sug =
-      snippet: child.tagName + '>' + (if closingConfig then closingTag else '')
+      snippet: snippet
       displayText: child.tagName
       description: child.description ? childType?.description
       type: 'tag'
