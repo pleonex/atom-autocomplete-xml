@@ -99,8 +99,10 @@ module.exports =
     # The suggestion is a merge between the general type info and the
     # specific information from the child object.
     childType = @types[child.xsdTypeName]
+    closingTag = '${1:}</' + child.tagName + '>'
+    closingConfig = atom.config.get 'autocomplete-xml.addClosingTag'
     sug =
-      text: child.tagName + '>'
+      snippet: child.tagName + '>' + (if closingConfig then closingTag else '')
       displayText: child.tagName
       description: child.description ? childType?.description
       type: 'tag'

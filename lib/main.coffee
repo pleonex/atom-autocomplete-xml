@@ -10,6 +10,12 @@ module.exports =
       type: 'boolean'
       default: true
 
+    addClosingTag:
+      title: 'Add Closing Tag'
+      description: 'When enabled the closing tag is inserted too.'
+      type: 'boolean'
+      default: true
+
   getProvider: -> provider
 
   deactivate: ->

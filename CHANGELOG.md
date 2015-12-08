@@ -1,4 +1,5 @@
 ## 0.8.0
+* New configuration to add automatically the closing tag too.
 * Parse XSD union SimpleType restriction.
 * Autocomplete attribute values.
 
