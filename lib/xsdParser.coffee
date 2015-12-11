@@ -1,6 +1,3 @@
-xml2js = require 'xml2js'
-uuid = require 'uuid'
-
 module.exports =
   # Expected type object from external modules.
   # type:
@@ -38,6 +35,7 @@ module.exports =
   attributeGroups: {}
 
   parseFromString: (xmlString, complete) ->
+    xml2js = require 'xml2js'
     xml2js.parseString xmlString, {
       tagNameProcessors: [xml2js.processors.stripPrefix] # Strip nm prefix
       preserveChildrenOrder: true
@@ -231,7 +229,7 @@ module.exports =
     if not child.xsdTypeName and node.$$
       # Create a randome type name and parse the child.
       # Iterate to skip "annotation", etc. It should ignore all except one.
-      child.xsdTypeName = uuid()
+      child.xsdTypeName = require('uuid')()
       @parseType childNode, child.xsdTypeName for childNode in node.$$
 
     return child
