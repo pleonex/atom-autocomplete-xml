@@ -135,13 +135,14 @@ module.exports =
 
 
   ## Checks if the current cursor is about complete attributes.
-  isAttribute: ({scopeDescriptor, editor, bufferPosition}) ->
+  isAttribute: ({scopeDescriptor, editor, prefix, bufferPosition}) ->
     {row, column} = bufferPosition
+    column -= prefix.length  # Remove the prefix to get the lastest char.
     previousChar = editor.getTextInBufferRange([[row, column-1], [row, column]])
     scopes = scopeDescriptor.getScopesArray()
     (scopes.indexOf('meta.tag.xml') isnt -1 or
       scopes.indexOf('meta.tag.no-content.xml') isnt -1) and
-      previousChar isnt '>'
+      previousChar isnt '>'  # This avoid false-positives with values.
 
 
   ## Get the attributes for the current XPath tag.

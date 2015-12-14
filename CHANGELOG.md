@@ -1,3 +1,6 @@
+## 0.8.1
+* Fix error detecting tag values as attributes.
+
 ## 0.8.0
 * Add automatically required attributes when completing a tag.
 * New configuration to add automatically the closing tag too.
