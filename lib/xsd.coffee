@@ -1,7 +1,3 @@
-http = require 'http'
-https = require 'https'
-fs = require 'fs'
-path = require 'path'
 xsdParser = require './xsdParser'
 
 module.exports =
@@ -18,9 +14,9 @@ module.exports =
     # Get the protocol used to download the file.
     protocol = null
     if xsdUri.substr(0, 7) is "http://"
-      protocol = http
+      protocol = require 'http'
     else if xsdUri.substr(0, 8) is "https://"
-      protocol = https
+      protocol = require 'https'
 
     if protocol
       # Download the file
@@ -35,6 +31,7 @@ module.exports =
       ).on 'error', (e) ->
         console.error e
     else
+      path = require 'path'
       # Get the base path. In absolute path nothing, in relative the file dir.
       if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
         basePath = ''
@@ -42,6 +39,7 @@ module.exports =
         basePath = path.dirname xmlPath
 
       # Read the file from disk
+      fs = require 'fs'
       fs.readFile path.join(basePath, xsdUri), (err, data) =>
         if err then console.error err else @parseFromString(data, complete)
 
