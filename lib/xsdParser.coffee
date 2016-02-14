@@ -187,7 +187,6 @@ module.exports =
         .concat((@parseChildrenGroups childrenNode.sequence, 'sequence'))
         .concat((@parseChildrenGroups childrenNode.group, 'group'))
 
-    # TODO: Create snippet from attributes.
     if node.attribute
       type.xsdAttributes = (@parseAttribute n for n in node.$$).filter Boolean
 
@@ -217,6 +216,15 @@ module.exports =
     return groups
 
 
+  # Parse the simple type defined inside a node with a random UUID.
+  parseAnonElements: (node) ->
+    # Create a randome type name and parse the child.
+    # Iterate to skip "annotation", etc. It should ignore all except one.
+    randomName = require('uuid')()
+    @parseType childNode, randomName for childNode in node.$$
+    return randomName
+
+
   ## Parse a child node.
   parseElement: (node) ->
     child =
@@ -228,10 +236,7 @@ module.exports =
 
     # If the element type is defined inside.
     if not child.xsdTypeName and node.$$
-      # Create a randome type name and parse the child.
-      # Iterate to skip "annotation", etc. It should ignore all except one.
-      child.xsdTypeName = require('uuid')()
-      @parseType childNode, child.xsdTypeName for childNode in node.$$
+      child.xsdTypeName = @parseAnonElements node
 
     return child
 
@@ -239,14 +244,18 @@ module.exports =
   parseAttribute: (node) ->
     nodeName = node["#name"]
     if nodeName is "attribute" and node.$.use isnt "prohibited"
-      return {
+      attr =
         name: node.$.name
         type: node.$.type
         description: @getDocumentation node
         fixed: node.$.fixed
         use: node.$.use
         default: node.$.default
-      }
+
+      # If the attribute type is defined inside.
+      if not node.$.type and node.$$
+        attr.type = @parseAnonElements node
+      return attr
     else if nodeName is "attributeGroup"
       return {ref: node.$.ref}
     else
