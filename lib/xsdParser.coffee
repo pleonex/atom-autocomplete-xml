@@ -92,7 +92,7 @@ module.exports =
 
   ## Remove new line chars and trim spaces.
   normalizeString: (str) ->
-    str.replace(/[\n\r]/, '').trim() if str
+    str?.replace?(/[\n\r]/, '').trim()
 
 
   ## Get documentation string from node
