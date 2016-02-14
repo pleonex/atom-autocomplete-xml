@@ -79,6 +79,7 @@ module.exports =
   parseType: (node, typeName) ->
     # Create a basic type from the common fields.
     type = @initTypeObject node, typeName
+    return null if not type.xsdTypeName
 
     # Parse by node type.
     nodeName = node["#name"]
@@ -106,7 +107,7 @@ module.exports =
     type =
       # XSD params
       xsdType: ''
-      xsdTypeName: typeName ? node.$.name
+      xsdTypeName: typeName ? node.$?.name
       xsdAttributes: []
       xsdChildrenMode: ''
       xsdChildren: []
