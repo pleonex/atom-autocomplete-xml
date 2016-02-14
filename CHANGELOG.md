@@ -1,3 +1,8 @@
+## 0.8.2
+* Fix crash when there are tags without the name attribute.
+* Fix crash when the documentation tag is empty.
+* Support attribute types defined inside the node.
+
 ## 0.8.1
 * Fix error detecting tag values as attributes.
 * Decrease load time from ~150 ms to less than 5 ms.
