@@ -54,8 +54,12 @@ module.exports =
       return
 
     # Check that the schema follow the standard
-    xsdStandard = xml.$["xmlns:xs"]
-    if not xsdStandard or xsdStandard isnt "http://www.w3.org/2001/XMLSchema"
+    for name, value of xml.$
+      if value is "http://www.w3.org/2001/XMLSchema"
+        schemaFound = true
+        console.log "Found XMLSchema at namespace " + name
+
+    if not schemaFound
       console.log "The schema doesn't follow the standard."
       return
 
