@@ -16,7 +16,7 @@ XML tag autocompletion for Atom text editor!
 
 # Features
 * Read XSD files from HTTP, HTTPS or local URI.
-* Show autocompletation for tags and attributes with documentation if available.
+* Show autocompletion for tags and attributes with documentation if available.
 
 # Code structure
 The package code is inside the *lib* folder.
