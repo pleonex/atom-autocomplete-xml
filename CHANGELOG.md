@@ -1,5 +1,6 @@
 ## 0.8.4
 * Fix #26 - Error trying to dispose the status bar.
+* Fix tag value completion for fields with dots.
 
 ## 0.8.3
 * Fix #15 - Don't force xmlns to "xs".
