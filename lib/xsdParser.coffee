@@ -296,7 +296,7 @@ module.exports =
 
     # Now create a complex type.
     root = @initTypeObject null, rootElement.xsdTypeName
-    root.description = rootElement.description ? rootType.description
+    root.description = rootElement.description ? rootType?.description
     root.text = rootTagName
     root.displayText = rootTagName
     root.type = 'class'
@@ -304,9 +304,10 @@ module.exports =
     root.xsdType = 'complex'
 
     # Copy the type into the root object.
-    root.xsdAttributes = rootType.xsdAttributes
-    root.xsdChildrenMode = rootType.xsdChildrenMode
-    root.xsdChildren = rootType.xsdChildren
+    if rootType
+      root.xsdAttributes = rootType.xsdAttributes
+      root.xsdChildrenMode = rootType.xsdChildrenMode
+      root.xsdChildren = rootType.xsdChildren
 
     @roots[rootTagName] = root
     return root

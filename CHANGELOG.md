@@ -1,5 +1,6 @@
 ## 0.9.2
 * Fix #12 - XSD paths starting with file:/// weren't load.
+* Additional fix for #13 - Root elements with built-in types.
 
 ## 0.9.1
 * Add robustness for corner cases of reading XSD files.
