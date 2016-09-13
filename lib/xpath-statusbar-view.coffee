@@ -31,7 +31,7 @@ class XPathStatusBarView extends HTMLDivElement
     @activeItemSubscription = null
 
     # Destroy the configuration change subscription.
-    @configurationSubscription?.destroy()
+    @configurationSubscription?.dispose()
     @configurationSubscription = null
 
     # Destroy the tile StatusBar object.
