@@ -21,15 +21,15 @@ module.exports =
   getProvider: -> provider
 
   activate: (state) ->
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'main:copyXpathToClipboard': => @copyXpathToClipboard()
-    @subscriptions.dispose()
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'autocomplete-xml:copy-XPath-to-clipboard': => @copyXpathToClipboard()
 
   deactivate: ->
     @xpathView?.destroy()
     @xpathView = null
+    @subscriptions?.dispose()
+    @subscription = null
 
   consumeStatusBar: (statusBar) ->
     XPathStatusBarView = require './xpath-statusbar-view'

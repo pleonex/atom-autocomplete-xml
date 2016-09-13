@@ -1,4 +1,5 @@
 ## 0.8.4
+* Add keymap to copy the current XPath into the clipboard.
 * Fix #26 - Error trying to dispose the status bar.
 * Fix tag value completion for fields with dots.
 
