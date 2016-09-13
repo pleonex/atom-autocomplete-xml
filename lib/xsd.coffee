@@ -35,6 +35,9 @@ module.exports =
       # Get the base path. In absolute path nothing, in relative the file dir.
       if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
         basePath = ''
+      else if xsdUri.startsWith 'file:///'
+        basePath = ''
+        xsdUri = xsdUri.slice 8
       else
         basePath = path.dirname xmlPath
 

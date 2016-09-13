@@ -1,3 +1,6 @@
+## 0.9.2
+* Fix #12 - XSD paths starting with file:/// weren't load.
+
 ## 0.9.1
 * Add robustness for corner cases of reading XSD files.
 * Fix #17 - Corner case where the XML schema is empty.
