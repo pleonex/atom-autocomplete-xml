@@ -56,14 +56,15 @@ module.exports =
   getXsdUri: ({editor}) ->
     # Get the XSD url only if the XML ask for validation.
     txt = editor.getText()
-    if txt.match(xmlValidation)  
-      xsdMatch = txt.match(xsdPattern)
-      if xsdMatch then uri = xsdMatch?[1] 
-      else
-        xsdWithNamespaceMatch = txt.match(xsdWithNamespacePattern)
-        if xsdWithNamespaceMatch then uri = xsdWithNamespaceMatch?[1]        
-    else null
+    return null if not txt.match(xmlValidation)
 
+    # Try with noNamespaceSchemaLocation
+    xsdMatch = txt.match(xsdPattern)
+    return xsdMatch?[1] if xsdMatch
+
+    # Try with schemaLocation
+    xsdWithNamespaceMatch = txt.match(xsdWithNamespacePattern)
+    return xsdWithNamespaceMatch?[1] if xsdWithNamespaceMatch
 
   ## Filter the candidate completions by prefix.
   filterCompletions: (sugs, pref) ->

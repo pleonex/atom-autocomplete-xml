@@ -1,6 +1,5 @@
 provider = require './provider'
 utils = require './xml-utils'
-{CompositeDisposable} = require 'atom'
 
 module.exports =
   xpathView: null
@@ -21,6 +20,7 @@ module.exports =
   getProvider: -> provider
 
   activate: (state) ->
+    {CompositeDisposable} = require 'atom'
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
       'autocomplete-xml:copy-XPath-to-clipboard': => @copyXpathToClipboard()

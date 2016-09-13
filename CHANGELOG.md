@@ -1,5 +1,6 @@
 ## 0.8.4
 * Add keymap to copy the current XPath into the clipboard.
+* Read XSD if starts with schemaLocation (namespaces aren't supported yet).
 * Fix #26 - Error trying to dispose the status bar.
 * Fix tag value completion for fields with dots.
 
