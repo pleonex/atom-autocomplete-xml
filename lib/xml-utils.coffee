@@ -10,22 +10,37 @@ endCommentPattern = '\s*-->'
 fullPattern = new RegExp("(" +
   startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
   startCommentPattern + "|" + endCommentPattern + ")", "g")
+wordPattern = new RegExp('^(\\w+)')
 
 
 module.exports =
+  getXPathWithPrefix: (buffer, bufferPosition, prefix, maxDepth) ->
+    {row, column} = bufferPosition
+    column -= prefix.length
+    return @getXPath(buffer, row, column, maxDepth)
 
-  ## Get the full XPath to the current tag.
-  getXPath: (buffer, bufferPosition, prefix, maxDepth) ->
+
+  getXPathCompleteWord: (buffer, bufferPosition, maxDepth) ->
+    {row, column} = bufferPosition
+
+    # Try to get the end of the current word if any
+    line = buffer.lineForRow(row).slice(column)
+    wordMatch = line.match(wordPattern)
+    column += wordMatch[1].length if wordMatch
+
+    return @getXPath(buffer, row, column, maxDepth)
+
+
+  getXPath: (buffer, row, column, maxDepth) ->
     # For every row, checks if it's an open, close, or autoopenclose tag and
     # update a list of all the open tags.
-    {row, column} = bufferPosition
     xpath = []
     skipList = []
     waitingStartTag = false
     waitingStarTComment = false
 
     # For the first line read removing the prefix
-    line = buffer.getTextInRange([[row, 0], [row, column-prefix.length]])
+    line = buffer.getTextInRange([[row, 0], [row, column]])
 
     while row >= 0 and (!maxDepth or xpath.length < maxDepth)
       row--

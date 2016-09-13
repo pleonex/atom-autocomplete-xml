@@ -99,7 +99,7 @@ module.exports =
   getTagNameCompletions: ({editor, bufferPosition, prefix}) ->
     # Get the children of the current XPath tag.
     children = xsd.getChildren(
-      utils.getXPath(editor.getBuffer(), bufferPosition, prefix))
+      utils.getXPathWithPrefix(editor.getBuffer(), bufferPosition, prefix))
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions children, (if prefix is '<' then '' else prefix)
@@ -116,7 +116,8 @@ module.exports =
 
   ## Get the tag name that close the current one.
   getCloseTagNameCompletion: ({editor, bufferPosition, prefix}) ->
-    parentTag = utils.getXPath(editor.getBuffer(),bufferPosition,prefix,1)
+    buffer = editor.getBuffer()
+    parentTag = utils.getXPathWithPrefix(buffer, bufferPosition, prefix, 1)
     parentTag = parentTag[parentTag.length - 1]
     return [{
       text: parentTag + '>'
@@ -136,7 +137,7 @@ module.exports =
   getValuesCompletions: ({editor, bufferPosition, prefix}) ->
     # Get the children of the current XPath tag.
     children = xsd.getValues(
-      utils.getXPath(editor.getBuffer(), bufferPosition, ''))
+      utils.getXPathWithPrefix(editor.getBuffer(), bufferPosition, ''))
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions children, prefix
@@ -157,7 +158,7 @@ module.exports =
   getAttributeCompletions: ({editor, bufferPosition, prefix}) ->
     # Get the attributes of the current XPath tag.
     attributes = xsd.getAttributes(
-      utils.getXPath(editor.getBuffer(), bufferPosition, ''))
+      utils.getXPathWithPrefix(editor.getBuffer(), bufferPosition, ''))
 
     # Apply a filter with the current prefix and return.
     return @filterCompletions attributes, prefix
@@ -178,7 +179,7 @@ module.exports =
     attrName = attrName.slice 0, -1
 
     # Get the XPath
-    xpath = utils.getXPath(editor.getBuffer(), bufferPosition, '')
+    xpath = utils.getXPathWithPrefix(editor.getBuffer(), bufferPosition, '')
 
     # Get the children of the XPath
     children = xsd.getAttributeValues xpath, attrName

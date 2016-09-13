@@ -41,5 +41,5 @@ module.exports =
     if editor
       buffer = editor.getBuffer()
       bufferPosition = editor.getCursorBufferPosition()
-      xpath = utils.getXPath buffer, bufferPosition, ''
+      xpath = utils.getXPathCompleteWord buffer, bufferPosition
       atom.clipboard.write(xpath.join '/')

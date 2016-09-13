@@ -1,8 +1,9 @@
-## 0.8.4
-* Add keymap to copy the current XPath into the clipboard.
-* Read XSD if starts with schemaLocation (namespaces aren't supported yet).
+## 0.9.0
+* Fix #23 - XPath when cursor is inside tag name.
 * Fix #26 - Error trying to dispose the status bar.
+* Add keymap to copy the current XPath into the clipboard.
 * Fix tag value completion for fields with dots.
+* Read XSD if starts with schemaLocation (namespaces aren't supported yet).
 
 ## 0.8.3
 * Fix #15 - Don't force xmlns to "xs".

@@ -92,7 +92,7 @@ class XPathStatusBarView extends HTMLDivElement
     if editor
       buffer = editor.getBuffer()
       bufferPosition = editor.getCursorBufferPosition()
-      xpath = utils.getXPath buffer, bufferPosition, ''
+      xpath = utils.getXPathCompleteWord buffer, bufferPosition
       @xpathLabel.textContent = xpath.join '/'
     else
       @xpathLabel.textCotent = ''
