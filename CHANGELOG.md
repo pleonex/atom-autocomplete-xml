@@ -1,3 +1,8 @@
+## 0.9.1
+* Add robustness for corner cases of reading XSD files.
+* Fix #17 - Corner case where the XML schema is empty.
+* Fix #13 - Root elements without type.
+
 ## 0.9.0
 * Fix #23 - XPath when cursor is inside tag name.
 * Fix #26 - Error trying to dispose the status bar.

@@ -41,7 +41,12 @@ module.exports =
       preserveChildrenOrder: true
       explicitChildren: true
       }, (err, result) =>
-        if err then console.error err else @parse(result, complete)
+        if err
+          console.error err
+        else if not result
+          console.error "Empty XSD definition"
+        else
+          @parse(result, complete)
 
 
   ## Parrse the XSD file. Prepare types and children.
@@ -60,6 +65,11 @@ module.exports =
 
     if not schemaFound
       console.log "The schema doesn't follow the standard."
+      return
+
+    # Check if there is at least one node in the schema definition
+    if not xml.$$
+      console.log "The schema is empty."
       return
 
     # Process all ComplexTypes and SimpleTypes
@@ -110,7 +120,7 @@ module.exports =
     type =
       # XSD params
       xsdType: ''
-      xsdTypeName: typeName ? node.$?.name
+      xsdTypeName: typeName ? node?.$?.name
       xsdAttributes: []
       xsdChildrenMode: ''
       xsdChildren: []

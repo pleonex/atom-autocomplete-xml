@@ -41,7 +41,12 @@ module.exports =
       # Read the file from disk
       fs = require 'fs'
       fs.readFile path.join(basePath, xsdUri), (err, data) =>
-        if err then console.error err else @parseFromString(data, complete)
+        if err
+          console.error err
+        else if not data
+          console.error 'Cannot get content from XSD file'
+        else
+          @parseFromString(data, complete)
 
 
   ## Parse the the XML
