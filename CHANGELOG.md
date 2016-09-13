@@ -1,3 +1,9 @@
+## 0.8.4
+* Fix #26 - Error trying to dispose the status bar.
+
+## 0.8.3
+* Fix #15 - Don't force xmlns to "xs".
+
 ## 0.8.2
 * Fix crash when there are tags without the name attribute.
 * Fix crash when the documentation tag is empty.
