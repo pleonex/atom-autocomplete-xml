@@ -2,8 +2,8 @@ xsd = require './xsd'
 utils = require './xml-utils'
 
 xmlValidation = /xmlns:xsi="http:\/\/www.w3.org\/2001\/XMLSchema-instance"/
-xsdPattern = /xsi:noNamespaceSchemaLocation="(.+)"/
-xsdWithNamespacePattern = /xsi:schemaLocation="\S+\s+(.+)"/
+xsdPattern = /xsi:noNamespaceSchemaLocation="(.+?)"/
+xsdWithNamespacePattern = /xsi:schemaLocation="\S+\s+(.+?)"/
 
 module.exports =
   # Enable for XML but not for XML comments.
