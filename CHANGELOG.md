@@ -1,3 +1,6 @@
+## 0.9.3
+* Fix regex for schema location when there were attributes adjacent (#27 by @PRGfx)
+
 ## 0.9.2
 * Fix #12 - XSD paths starting with file:/// weren't load.
 * Additional fix for #13 - Root elements with built-in types.
