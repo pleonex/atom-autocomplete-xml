@@ -1,3 +1,6 @@
+## 0.9.4
+* Fix XSD Windows paths starting with C:/
+
 ## 0.9.3
 * Fix regex for schema location when there were attributes adjacent (#27 by @PRGfx)
 

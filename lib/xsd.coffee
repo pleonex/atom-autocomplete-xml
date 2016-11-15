@@ -33,7 +33,8 @@ module.exports =
     else
       path = require 'path'
       # Get the base path. In absolute path nothing, in relative the file dir.
-      if xsdUri[0] == '/' or xsdUri.substr(1, 2) == ':\\'
+      winRoot = if xsdUri.length > 3 then xsdUri.substr(1, 2) else ''
+      if xsdUri[0] == '/' or [':/', ':\\'].includes(winRoot)
         basePath = ''
       else if xsdUri.startsWith 'file:///'
         basePath = ''
