@@ -325,6 +325,10 @@ module.exports =
 
         # Copy fields from base
         linkType = @types[extenType.$.base]
+        if not linkType
+          atom.notifications.addError "can't find base type " + extenType.$.base
+          continue
+
         type.xsdTypeName = linkType.xsdTypeName
         type.xsdChildrenMode = linkType.xsdChildrenMode
         type.xsdChildren = linkType.xsdChildren
