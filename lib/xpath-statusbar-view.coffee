@@ -97,6 +97,12 @@ class XPathStatusBarView extends HTMLDivElement
     else
       @xpathLabel.textCotent = ''
 
+  ## Shortcut for copying xpath to clipboard 
+  copyToClipboard: ->
+      if editor = atom.workspace.getActiveTextEditor()
+          if Utils.confirmFileType(editor, 'xml')
+              atom.clipboard.write(xpath.join '/')
+
 ## Register the class into the document to be available.
 module.exports =
   document.registerElement(
