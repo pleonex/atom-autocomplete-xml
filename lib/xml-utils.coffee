@@ -15,7 +15,7 @@ startCDATAPattern = '\s*<!\\[CDATA\\['
 endCDATAPattern = '\s*\\]\\]>'
 fullPattern = new RegExp("(" +
   startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
-  startCommentPattern + "|" + endCommentPattern +
+  startCommentPattern + "|" + endCommentPattern + "|" +
   startCDATAPattern + "|" + endCDATAPattern + ")", "g")
 wordPattern = new RegExp('^(\\w+)')
 
