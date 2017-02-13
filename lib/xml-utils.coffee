@@ -2,14 +2,19 @@
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
+# * CDATA section start: <![CDATA[
+# * CDATA section end: ]]>
 startTagPattern = '<\s*[\\.\\-:_a-zA-Z0-9]+'
 endTagPattern = '<\\/\s*[\\.\\-:_a-zA-Z0-9]+'
 autoClosePattern = '\\/>'
 startCommentPattern = '\s*<!--'
 endCommentPattern = '\s*-->'
+startCDATAPattern = '\s*<!\\[CDATA\\['
+endCDATAPattern = '\s*\\]\\]>'
 fullPattern = new RegExp("(" +
   startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
-  startCommentPattern + "|" + endCommentPattern + ")", "g")
+  startCommentPattern + "|" + endCommentPattern +
+  startCDATAPattern + "|" + endCDATAPattern + ")", "g")
 wordPattern = new RegExp('^(\\w+)')
 
 
@@ -51,10 +56,10 @@ module.exports =
 
       for match in matches ? []
         # Start comment
-        if match == "<!--"
+        if match == "<!--" || match == "<![CDATA["
           waitingStartComment = false
         # End comment
-        else if match == "-->"
+        else if match == "-->" || match == "]]>"
           waitingStartComment = true
         # Ommit comment content
         else if waitingStartComment
