@@ -2,6 +2,8 @@
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
+# * Comment start: <!--
+# * Comment end: -->
 # * CDATA section start: <![CDATA[
 # * CDATA section end: ]]>
 startTagPattern = '<\s*[\\.\\-:_a-zA-Z0-9]+'
