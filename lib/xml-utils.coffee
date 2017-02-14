@@ -45,6 +45,7 @@ module.exports =
     skipList = []
     waitingStartTag = false
     waitingStarTComment = false
+    waitingStartCDATA = false
 
     # For the first line read removing the prefix
     line = buffer.getTextInRange([[row, 0], [row, column]])
@@ -58,13 +59,22 @@ module.exports =
 
       for match in matches ? []
         # Start comment
-        if match == "<!--" || match == "<![CDATA["
+        if match == "<!--"
           waitingStartComment = false
         # End comment
-        else if match == "-->" || match == "]]>"
+        else if match == "-->"
           waitingStartComment = true
         # Ommit comment content
         else if waitingStartComment
+          continue
+        # Start CDATA
+        else if match == "<![CDATA["
+          waitingStartCDATA = false
+        # End CDATA
+        else if match == "]]>"
+          waitingStartCDATA = true
+        # Ommit CDATA content
+        else if waitingStartCDATA
           continue
         # Auto tag close
         else if match == "/>"
