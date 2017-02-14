@@ -44,7 +44,7 @@ module.exports =
     xpath = []
     skipList = []
     waitingStartTag = false
-    waitingStarTComment = false
+    waitingStartComment = false
     waitingStartCDATA = false
 
     # For the first line read removing the prefix
