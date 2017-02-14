@@ -63,8 +63,10 @@ module.exports =
           waitingStartComment = false
         # End comment
         else if match == "-->"
-          waitingStartComment = true
-        # Ommit comment content
+          # Comment markup should be ignored inside CDATA sections
+          unless waitingStartCDATA
+            waitingStartComment = true
+        # Omit comment content
         else if waitingStartComment
           continue
         # Start CDATA
@@ -73,7 +75,7 @@ module.exports =
         # End CDATA
         else if match == "]]>"
           waitingStartCDATA = true
-        # Ommit CDATA content
+        # Omit CDATA content
         else if waitingStartCDATA
           continue
         # Auto tag close
