@@ -329,9 +329,13 @@ module.exports =
           atom.notifications.addError "can't find base type " + extenType.$.base
           continue
 
+        # Get extending elements to merge them with linkType children
+        extendingType = @initTypeObject null, "someType"
+        @parseComplexType extenType, extendingType
+
         type.xsdTypeName = linkType.xsdTypeName
         type.xsdChildrenMode = linkType.xsdChildrenMode
-        type.xsdChildren = linkType.xsdChildren
+        type.xsdChildren = linkType.xsdChildren.concat extendingType.xsdChildren
         type.xsdAttributes = extenAttr.concat linkType.xsdAttributes
         type.description ?= linkType.description
         type.type = linkType.type
