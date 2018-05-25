@@ -354,14 +354,15 @@ module.exports =
           memberType = @types[t]
           type.xsdChildren.push memberType.xsdChildren[0] if memberType
 
-      # At the moment, I think it only makes sense if it replaces all the
-      # elements. Consider a group that contains a sequence of choice elements.
-      # We don't support sequence->sequence(from group)->choide->elements.
+      # Resolve all groups in type
+      newChildren = []
       for group in type.xsdChildren
         if group.childType is 'group'
           linkType = @types[group.ref]
-          type.xsdChildren = linkType.xsdChildren
-          break
+          newChildren = newChildren.concat(linkType.xsdChildren)
+        else
+          newChildren = newChildren.concat([group])
+      type.xsdChildren = newChildren
 
       # Add the attributes from the group attributes
       groups = (attr.ref for attr in type.xsdAttributes when attr.ref)
