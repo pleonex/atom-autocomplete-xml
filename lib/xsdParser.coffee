@@ -147,6 +147,9 @@ module.exports =
     else if node.union
       type.xsdChildrenMode = 'union'
       type.leftLabel = node.union[0].$.memberTypes
+    else if node.list
+      type.xsdChildrenMode = 'list'
+      type.leftLabel = node.list[0].$.itemType
 
     if childrenNode
       group =
@@ -353,6 +356,14 @@ module.exports =
         for t in unionTypes
           memberType = @types[t]
           type.xsdChildren.push memberType.xsdChildren[0] if memberType
+
+      # If it's a list
+      else if type.xsdChildrenMode == 'list'
+        listType = @types[type.leftLabel]
+        if not listType
+          atom.notifications.addError "can't find item type " + type.leftLabel
+          continue
+        type.xsdChildren = listType.xsdChildren
 
       # At the moment, I think it only makes sense if it replaces all the
       # elements. Consider a group that contains a sequence of choice elements.
