@@ -188,6 +188,10 @@ module.exports =
     else if node.complexContent?[0].extension
       type.xsdChildrenMode = 'extension'
       type.xsdChildren = node.complexContent[0].extension[0]
+    else if node.simpleContent?[0].extension
+      type.xsdType = 'simple'
+      type.xsdChildrenMode = 'extension'
+      type.xsdChildren = node.simpleContent[0].extension[0]
     else if node.group
       type.xsdChildrenMode = 'group'
       type.xsdChildren = node.group[0]
@@ -326,8 +330,12 @@ module.exports =
         # Copy fields from base
         linkType = @types[extenType.$.base]
         if not linkType
-          atom.notifications.addError "can't find base type " + extenType.$.base
-          continue
+          # Ingore link type for simple types reffering to standard simple types like xs:string, etc.
+          if type.xsdType == 'simple' and ":" in extenType.$.base
+            linkType = @initTypeObject null, type.xsdTypeName
+          else
+            atom.notifications.addError "can't find base type " + extenType.$.base
+            continue
 
         # Get extending elements to merge them with linkType children
         extendingType = @initTypeObject null, "someType"
