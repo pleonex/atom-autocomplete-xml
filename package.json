@@ -15,8 +15,8 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "xml2js": "0.4.15",
-    "uuid": "^2.0.1"
+    "uuid": "^2.0.1",
+    "xml2js": "^0.4.15"
   },
   "providedServices": {
     "autocomplete.provider": {
