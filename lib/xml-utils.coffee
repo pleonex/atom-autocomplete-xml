@@ -2,14 +2,21 @@
 # * Start tags: <tagName
 # * End tags: </tagName
 # * Auto close tags: />
+# * Comment start: <!--
+# * Comment end: -->
+# * CDATA section start: <![CDATA[
+# * CDATA section end: ]]>
 startTagPattern = '<\s*[\\.\\-:_a-zA-Z0-9]+'
 endTagPattern = '<\\/\s*[\\.\\-:_a-zA-Z0-9]+'
 autoClosePattern = '\\/>'
 startCommentPattern = '\s*<!--'
 endCommentPattern = '\s*-->'
+startCDATAPattern = '\s*<!\\[CDATA\\['
+endCDATAPattern = '\s*\\]\\]>'
 fullPattern = new RegExp("(" +
   startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
-  startCommentPattern + "|" + endCommentPattern + ")", "g")
+  startCommentPattern + "|" + endCommentPattern + "|" +
+  startCDATAPattern + "|" + endCDATAPattern + ")", "g")
 wordPattern = new RegExp('^(\\w+)')
 
 
@@ -37,7 +44,8 @@ module.exports =
     xpath = []
     skipList = []
     waitingStartTag = false
-    waitingStarTComment = false
+    waitingStartComment = false
+    waitingStartCDATA = false
 
     # For the first line read removing the prefix
     line = buffer.getTextInRange([[row, 0], [row, column]])
@@ -55,9 +63,20 @@ module.exports =
           waitingStartComment = false
         # End comment
         else if match == "-->"
-          waitingStartComment = true
-        # Ommit comment content
+          # Comment markup should be ignored inside CDATA sections
+          unless waitingStartCDATA
+            waitingStartComment = true
+        # Omit comment content
         else if waitingStartComment
+          continue
+        # Start CDATA
+        else if match == "<![CDATA["
+          waitingStartCDATA = false
+        # End CDATA
+        else if match == "]]>"
+          waitingStartCDATA = true
+        # Omit CDATA content
+        else if waitingStartCDATA
           continue
         # Auto tag close
         else if match == "/>"
