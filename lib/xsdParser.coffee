@@ -109,6 +109,37 @@ module.exports =
     str?.replace?(/[\n\r]/, '').trim()
 
 
+  ## Return true if built-in types
+  isBuiltInType: (typeName) ->
+    parts = typeName.split ':'
+    # Built-in types have to be prefixed with XSD schema prefix
+    if parts.length != 2
+      return false
+    # TODO check namespace prefix, I'm not sure how to do that
+    # Check built-in type names
+    return parts[1] in [
+      'string',
+      'boolean',
+      'decimal',
+      'float',
+      'double',
+      'duration',
+      'dateTime',
+      'time',
+      'date',
+      'gYearMonth',
+      'gYear',
+      'gMonthDay',
+      'gDay',
+      'gMonth',
+      'hexBinary',
+      'base64Binary',
+      'anyURI',
+      'QName',
+      'NOTATION'
+    ]
+
+
   ## Get documentation string from node
   getDocumentation: (node) ->
     @normalizeString(node?.annotation?[0].documentation[0]._ ?
@@ -138,7 +169,6 @@ module.exports =
     type.xsdType = 'simple'
 
     # Get the node that contains the children
-    # TODO: Support list children.
     # TODO: Support more restriction types.
     if node.restriction?[0].enumeration
       type.xsdChildrenMode = 'restriction'
@@ -147,6 +177,9 @@ module.exports =
     else if node.union
       type.xsdChildrenMode = 'union'
       type.leftLabel = node.union[0].$.memberTypes
+    else if node.list
+      type.xsdChildrenMode = 'list'
+      type.leftLabel = node.list[0].$.itemType
 
     if childrenNode
       group =
@@ -331,7 +364,7 @@ module.exports =
         linkType = @types[extenType.$.base]
         if not linkType
           # Ingore link type for simple types reffering to standard simple types like xs:string, etc.
-          if type.xsdType == 'simple' and ":" in extenType.$.base
+          if type.xsdType == 'simple' and @isBuiltInType(extenType.$.base)
             linkType = @initTypeObject null, type.xsdTypeName
           else
             atom.notifications.addError "can't find base type " + extenType.$.base
@@ -365,6 +398,19 @@ module.exports =
         for t in unionTypes
           memberType = @types[t]
           type.xsdChildren.push memberType.xsdChildren[0] if memberType
+
+      # If it's a list
+      else if type.xsdChildrenMode == 'list'
+        itemType = type.leftLabel
+        if not @isBuiltInType(itemType)
+          listType = @types[itemType]
+          if not listType
+            atom.notifications.addError "can't find item type " + itemType
+            continue
+          type.xsdChildren = listType.xsdChildren
+          type.leftLabel = ''
+        else
+          type.leftLabel = 'list of '.concat(type.leftLabel)
 
       # Resolve all groups in type
       newChildren = []
