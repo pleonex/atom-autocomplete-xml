@@ -138,7 +138,6 @@ module.exports =
     type.xsdType = 'simple'
 
     # Get the node that contains the children
-    # TODO: Support list children.
     # TODO: Support more restriction types.
     if node.restriction?[0].enumeration
       type.xsdChildrenMode = 'restriction'
