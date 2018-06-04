@@ -412,7 +412,6 @@ module.exports =
         else
           type.leftLabel = 'list of '.concat(type.leftLabel)
 
-
       # Resolve all groups in type
       newChildren = []
       for group in type.xsdChildren
