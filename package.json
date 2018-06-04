@@ -31,10 +31,5 @@
         "^1.0.0": "consumeStatusBar"
       }
     }
-  },
-  "apmInstallSource": {
-    "type": "git",
-    "source": "ph777/atom-autocomplete-xml",
-    "sha": "7f668754afc216fd21f2600b04dc9481b7e95bfd"
   }
 }
