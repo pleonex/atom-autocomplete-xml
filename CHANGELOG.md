@@ -1,3 +1,13 @@
+## 0.10.0
+Special thanks to @akukuq and @ph777!
+
+* Ignore CDATA sections when parsing XMLs (#29 by @akukuq).
+* Fix multiple groups in complex type (#44 by @ph777).
+* Fix xsd:extension to extend the base type with its elements (#46 by @ph777).
+* Add support extension of simpleType (#47 by @ph777).
+* Add support for list type (#48 by @ph777)
+* Bump dependencies
+
 ## 0.9.4
 * Fix XSD Windows paths starting with C:/
 
