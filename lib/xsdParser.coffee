@@ -161,10 +161,11 @@ module.exports =
       type.xsdChildren.push group
 
       for val in childrenNode.enumeration
+        doc = @getDocumentation val
         group.elements.push {
           tagName: val.$.value
           xsdTypeName: null
-          description: ''
+          description: doc
           minOccurs: 0
           maxOccurs: 1
         }

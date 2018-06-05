@@ -176,6 +176,7 @@ module.exports =
     displayText: child.tagName
     type: 'value'
     rightLabel: 'Value'
+    description: child.description
 
   ## Called when suggestion requested for attributes.
   getAttributes: (xpath) ->
