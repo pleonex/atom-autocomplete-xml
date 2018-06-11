@@ -142,9 +142,23 @@ module.exports =
 
   ## Get documentation string from node
   getDocumentation: (node) ->
-    @normalizeString(node?.annotation?[0].documentation[0]._ ?
-      node?.annotation?[0].documentation[0])
+    langUser = navigator.language
+    docs = node?.annotation?[0].documentation
+    if ! docs
+      return null
 
+    docEn = null
+    docAny = null
+    for doc in docs
+      langDoc = doc.$?.lang
+      if langDoc == langUser
+        return @normalizeString(doc._)
+      if langDoc == 'en'
+        docEn = doc
+      else
+        docAny = doc
+    return @normalizeString(if docEn then docEn._ else
+        if docAny then docAny._)
 
   # Initialize a type object from a Simple or Complex type node.
   initTypeObject: (node, typeName) ->
@@ -432,3 +446,4 @@ module.exports =
         else
           attributes.push attr
       type.xsdAttributes = attributes
+
