@@ -1,3 +1,9 @@
+## 0.10.1
+Special thanks to @ph777
+
+* Add documentation of enum elements (#52 by @ph777)
+* Support lang attribute in documentation (#51 by @ph777)
+
 ## 0.10.0
 Special thanks to @akukuq and @ph777!
 
