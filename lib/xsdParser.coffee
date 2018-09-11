@@ -190,7 +190,11 @@ module.exports =
       type.leftLabel = childrenNode.$.base
     else if node.union
       type.xsdChildrenMode = 'union'
-      type.leftLabel = node.union[0].$.memberTypes
+      #memberTypes is optional in the XSD spec.  Move on if it's not present
+      try
+        type.leftLabel = node.union[0].$.memberTypes
+      catch error
+        type.leftLabel = "No member types described."
     else if node.list
       type.xsdChildrenMode = 'list'
       type.leftLabel = node.list[0].$.itemType
@@ -391,8 +395,10 @@ module.exports =
 
         type.xsdTypeName = linkType.xsdTypeName
         type.xsdChildrenMode = linkType.xsdChildrenMode
-        type.xsdChildren = linkType.xsdChildren.concat extendingType.xsdChildren
-        type.xsdAttributes = extenAttr.concat linkType.xsdAttributes
+        if linkType.xsdChildren instanceof Array
+          type.xsdChildren = linkType.xsdChildren.concat extendingType.xsdChildren
+        if extenAttr instanceof Array
+          type.xsdAttributes = extenAttr.concat linkType.xsdAttributes
         type.description ?= linkType.description
         type.type = linkType.type
         type.rightLabel = linkType.rightLabel
@@ -446,4 +452,3 @@ module.exports =
         else
           attributes.push attr
       type.xsdAttributes = attributes
-
