@@ -14,9 +14,9 @@ module.exports =
     # Get the protocol used to download the file.
     protocol = null
     if xsdUri.substr(0, 7) is "http://"
-      protocol = require 'http'
+      protocol = require 'follow-redirects'.http
     else if xsdUri.substr(0, 8) is "https://"
-      protocol = require 'https'
+      protocol = require 'follow-redirects'.https
 
     if protocol
       # Download the file
