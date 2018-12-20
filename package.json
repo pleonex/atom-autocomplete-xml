@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "uuid": "^3.2.1",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "follow-redirects": "^1.5.10"
   },
   "providedServices": {
     "autocomplete.provider": {
