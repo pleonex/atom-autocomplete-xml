@@ -1,3 +1,9 @@
+## 0.11.0
+Special thanks to @applesauce49 and @fizzyduck
+
+* Implement support for 302 redirection while downloading XSD file (#55 by @fizzyduck)
+* Fix bugs #36 and #54 because memberType should be optional (#54 by @applesauce49)
+
 ## 0.10.1
 Special thanks to @ph777
 
